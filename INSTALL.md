@@ -76,12 +76,12 @@ To get the latest features and patches as soon as they are released, or to contr
 0. Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed for version control.
 1. From the terminal, clone the repository. This will add the provided URL to the list of remotes under the name `origin`:
     ```
-    git clone https://github.com/qiskit-community/staged-primitives.git
+    git clone https://github.com/qiskit-extensions/staged-primitives.git
     ```
     Alternatively, instead of cloning the original repository, you may choose to clone your personal [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) —provided that this functionality is enabled. You can do so by using the appropriate URL and adding the original repository to the list of remotes (here under the name `upstream`). This will be required for [contribution](CONTRIBUTING.md) unless you are granted write permissions for the original repository.
     ```
     git clone <YOUR-FORK-URL>
-    git remote add upstream https://github.com/qiskit-community/staged-primitives.git
+    git remote add upstream https://github.com/qiskit-extensions/staged-primitives.git
     ```
 2. Change directory to the freshly cloned repository:
     ```

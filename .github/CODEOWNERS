@@ -6,7 +6,7 @@
 # with an expected responsibility to review and maintain those subsections of
 # the repository.
 #
-# The @qiskit-community/qiskit-prototypes team is the group who're responsible 
+# The @qiskit-extensions/qiskit-prototypes team is the group who're responsible 
 # for the entire project and are empowered to approve merge code in any
 # part of the repository. Any member of the terra-core group should not be
 # listed in this file as it's redudant.
@@ -20,7 +20,7 @@
 # review/merging of PRs in different subsections of the repository.
 
 # Global rule, unless specialized by a later one
-* @qiskit-community/qiskit-prototypes
+* @qiskit-extensions/qiskit-prototypes
 
 # Folders (also their corresponding tests)
 

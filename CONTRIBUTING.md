@@ -36,8 +36,8 @@ We encourage your feedback!
 
 Other than submitting new source code, users can contribute in a number of meaningful ways. You can share your thoughts with us by:
 
-- [Opening an issue](https://github.com/qiskit-community/staged-primitives/issues) in the repository for reporting bugs, enhancements, or requesting new features.
-- [Starting a conversation on GitHub Discussions](https://github.com/qiskit-community/staged-primitives/discussions) and engaging with researchers, developers, and other users regarding this project.
+- [Opening an issue](https://github.com/qiskit-extensions/staged-primitives/issues) in the repository for reporting bugs, enhancements, or requesting new features.
+- [Starting a conversation on GitHub Discussions](https://github.com/qiskit-extensions/staged-primitives/discussions) and engaging with researchers, developers, and other users regarding this project.
 - Filling out our [survey](https://airtable.com/shr7sMAKUAjuIRpv7).
 
 
