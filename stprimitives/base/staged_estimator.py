@@ -164,7 +164,7 @@ class BaseStagedEstimator(BaseEstimator):
         self,
         circuit: QuantumCircuit,
         parameter_values: Sequence[float],
-    ) -> tuple[QuantumCircuit, ...]:
+    ) -> QuantumCircuit:
         """Single circuit equivalent of ``_bind_parameters``."""
 
     @abstractmethod
@@ -189,7 +189,7 @@ class BaseStagedEstimator(BaseEstimator):
     ## DEPRECATED
     ################################################################################
     # TODO: remove
-    # Note: to allow `backend` as positional argument while deprecated in place
+    # Note: to allow `backend` as positional argument while deprecated args in place
     def __new__(  # pylint: disable=signature-differs
         cls,
         backend: Backend,  # pylint: disable=unused-argument
@@ -204,5 +204,5 @@ class BaseStagedEstimator(BaseEstimator):
         observables: Sequence[int],
         parameter_values: Sequence[Sequence[float]],
         **run_options,
-    ) -> EstimatorResult:
+    ) -> EstimatorResult:  # pragma: no cover
         raise NotImplementedError("This method has been deprecated, use `run` instead.")
