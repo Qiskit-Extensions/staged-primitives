@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Staged Primitives."""
+"""Backend based primitives defining a staged computational pipeline."""
 
 __copyright__ = "(C) Copyright IBM 2023"
 __version__ = "0.0.0"
