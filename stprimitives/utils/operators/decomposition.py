@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 
 from numpy import logical_or
 from qiskit.opflow import PauliSumOp
-from qiskit.primitives.utils import init_observable
+from qiskit.primitives.utils import init_observable as normalize_operator  # TODO
 from qiskit.quantum_info.operators import Pauli, PauliList, SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 
@@ -42,7 +42,7 @@ class OperatorDecomposer(ABC):
             A list of operators each of which measurable with a single quantum circuit
             (i.e. on a singlet Pauli basis).
         """
-        operator = init_observable(operator)
+        operator = normalize_operator(operator)
         return self._decompose(operator)
 
     @abstractmethod
