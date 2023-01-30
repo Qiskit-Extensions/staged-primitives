@@ -18,6 +18,9 @@ from qiskit.result import Counts
 from stprimitives.utils.results import bitflip_counts, mask_counts
 
 
+################################################################################
+## TESTS
+################################################################################
 class TestBitflipCounts:
     """Test bitflip counts."""
 
