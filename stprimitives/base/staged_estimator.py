@@ -26,7 +26,7 @@ from qiskit.quantum_info import SparsePauliOp
 from qiskit.result import Counts
 
 
-class BaseStagedEstimator(BaseEstimator):
+class BaseStagedEstimator(BaseEstimator):  # pylint: disable=too-few-public-methods
     """Staged Estimator abstract base class."""
 
     def _run(
@@ -59,15 +59,6 @@ class BaseStagedEstimator(BaseEstimator):
         value_metadata_pairs = ((v, m) for r in results for v, m in zip(r.values, r.metadata))
         values, metadata = tuple(zip(*value_metadata_pairs))
         return EstimatorResult(values=array(values), metadata=list(metadata))
-
-    ################################################################################
-    ## ABSTRACT PROPERTIES
-    ################################################################################
-    # TODO: `BaseBackendEstimator` -> Interface segregation
-    @property
-    @abstractmethod
-    def backend(self) -> Backend:
-        """Backend to use for circuit execution."""
 
     ################################################################################
     ## STAGES / PIPELINE
