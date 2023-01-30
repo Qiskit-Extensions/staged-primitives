@@ -18,7 +18,11 @@ from pytest import mark
 from qiskit.opflow import PauliSumOp
 from qiskit.quantum_info.operators import Pauli, PauliList, SparsePauliOp
 
-from stprimitives.utils.operators import AbelianDecomposer, NaiveDecomposer
+from stprimitives.utils.operators import (
+    AbelianDecomposer,
+    NaiveDecomposer,
+    OperatorDecomposer,
+)
 
 
 ################################################################################
@@ -27,6 +31,10 @@ from stprimitives.utils.operators import AbelianDecomposer, NaiveDecomposer
 @mark.parametrize("decomposer", [NaiveDecomposer(), AbelianDecomposer()])
 class TestOperatorDecomposer:
     """Test OperatorDecomposer."""
+
+    def test_interface(self, decomposer):
+        """Test decomposers extend the OperatorDecomposer interface."""
+        assert isinstance(decomposer, OperatorDecomposer)
 
     @mark.parametrize(
         "unnormlized, normalized",
@@ -40,7 +48,7 @@ class TestOperatorDecomposer:
             ),
         ],
     )
-    def test_operator_normalization(self, decomposer, unnormlized, normalized):
+    def test_normalization(self, decomposer, unnormlized, normalized):
         """Test that input operators are normalized appropriately."""
         assert decomposer.decompose(unnormlized) == decomposer.decompose(normalized)
 

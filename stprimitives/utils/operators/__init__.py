@@ -12,12 +12,13 @@
 
 """Operators utils."""
 
-from .decomposition import AbelianDecomposer, NaiveDecomposer
+from .decomposition import AbelianDecomposer, NaiveDecomposer, OperatorDecomposer
 from .operators import build_pauli_measurement, pauli_integer_mask
 
 __all__ = [
     "AbelianDecomposer",
     "NaiveDecomposer",
+    "OperatorDecomposer",
     "build_pauli_measurement",
     "pauli_integer_mask",
 ]
