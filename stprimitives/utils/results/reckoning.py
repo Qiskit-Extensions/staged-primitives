@@ -99,7 +99,7 @@ class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
     ################################################################################
     def reckon(
         self,
-        counts: Sequence[Counts] | Counts,
+        counts_list: Sequence[Counts] | Counts,
         observables: Sequence[OperatorType] | OperatorType,
     ) -> ReckoningResult:
         """Compute expectation value and associated std-error for input observables from counts.
@@ -115,12 +115,12 @@ class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
         Returns:
             The expectation value and associated std-error for the sum of the input observables.
         """
-        counts = self._validate_counts(counts)
+        counts_list = self._validate_counts(counts_list)
         observables = self._validate_observables(observables)
-        self._cross_validate(counts, observables)
+        self._cross_validate(counts_list, observables)
         expval = 0.0
         variance = 0.0
-        for value, error in (self._reckon_single(c, o) for c, o in zip(counts, observables)):
+        for value, error in (self._reckon_single(c, o) for c, o in zip(counts_list, observables)):
             expval += value
             variance += error**2
         return ReckoningResult(expval, sqrt(variance))
@@ -137,15 +137,15 @@ class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
     ## AUXILIARY
     ################################################################################
     @staticmethod
-    def _validate_counts(counts: Sequence[Counts] | Counts) -> tuple[Counts, ...]:
+    def _validate_counts(counts_list: Sequence[Counts] | Counts) -> tuple[Counts, ...]:
         """Validate counts."""
-        if isinstance(counts, Counts):
-            counts = (counts,)
-        if not isinstance(counts, Sequence):
+        if isinstance(counts_list, Counts):
+            counts_list = (counts_list,)
+        if not isinstance(counts_list, Sequence):
             raise TypeError("Expected Sequence object.")
-        if any(not isinstance(c, Counts) for c in counts):
+        if any(not isinstance(c, Counts) for c in counts_list):
             raise TypeError("Expected Counts object.")
-        return tuple(counts)
+        return tuple(counts_list)
 
     @staticmethod
     def _validate_observables(
@@ -161,12 +161,14 @@ class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
         return tuple(normalize_operator(o) for o in observables)
 
     @staticmethod
-    def _cross_validate(counts: Sequence[Counts], observables: Sequence[SparsePauliOp]) -> None:
+    def _cross_validate(
+        counts_list: Sequence[Counts], observables: Sequence[SparsePauliOp]
+    ) -> None:
         """Cross validate counts and observables."""
         # TODO: validate num_bits -> Need to check every entry in counts (expensive)
-        if len(counts) != len(observables):
+        if len(counts_list) != len(observables):
             raise ValueError(
-                f"The number of counts entries ({len(counts)}) does not match "
+                f"The number of counts entries ({len(counts_list)}) does not match "
                 f"the number of observables ({len(observables)})."
             )
 
