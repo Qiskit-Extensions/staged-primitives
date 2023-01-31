@@ -79,16 +79,31 @@ def transpile_to_layout(circuit: QuantumCircuit, layout: Layout):
     return transpiled
 
 
-def infer_final_layout(
+def infer_end_layout_intlist(
     original_circuit: QuantumCircuit, transpiled_circuit: QuantumCircuit
-) -> Layout:
-    """Retrieve final layout from original and transpiled circuits (all measured).
+) -> tuple[int, ...]:
+    """Retrieve end layout intlist of physical qubits.
+
+    For every virtual qubit in the original circuit returns the index of the physical qubit
+    that it is mapped to at the end of the transpiled circuit.
 
     Note: Works under the assumption that the original circuit has a `measure_all`
     instruction at its end, and that the transpiler does not affect the classical
     registers.
     """
-    physical_qubits = _generate_final_layout_intlist(original_circuit, transpiled_circuit)
+    return tuple(_generate_end_layout_intlist(original_circuit, transpiled_circuit))
+
+
+def infer_end_layout(
+    original_circuit: QuantumCircuit, transpiled_circuit: QuantumCircuit
+) -> Layout:
+    """Retrieve end layout from original and transpiled circuits (all measured).
+
+    Note: Works under the assumption that the original circuit has a `measure_all`
+    instruction at its end, and that the transpiler does not affect the classical
+    registers.
+    """
+    physical_qubits = _generate_end_layout_intlist(original_circuit, transpiled_circuit)
     layout_dict: dict[int, Any] = dict.fromkeys(range(transpiled_circuit.num_qubits))
     layout_dict.update(dict(zip(physical_qubits, original_circuit.qubits)))
     return Layout(layout_dict)
@@ -121,10 +136,10 @@ def compose_circuits_w_metadata(*circuits: QuantumCircuit, inplace: bool = False
 ################################################################################
 ## AUXILIARY
 ################################################################################
-def _generate_final_layout_intlist(
+def _generate_end_layout_intlist(
     original_circuit: QuantumCircuit, transpiled_circuit: QuantumCircuit
 ) -> Iterator[int]:
-    """Generate final layout intlist of physical qubits.
+    """Generate end layout intlist of physical qubits.
 
     For every virtual qubit in the original circuit yields the index of the physical qubit
     that it is mapped to at the end of the transpiled circuit.

@@ -24,7 +24,8 @@ from qiskit.circuit.random import random_circuit
 from stprimitives.utils.circuits import (
     compose_circuits_w_metadata,
     get_measured_qubits,
-    infer_final_layout,
+    infer_end_layout,
+    infer_end_layout_intlist,
     layout_from_intlist,
     transpile_to_layout,
 )
@@ -145,18 +146,32 @@ class TestTranspileToLayout:
         assert circuit.final_layout == layout
 
 
-class TestInferFinalLayout:
-    """Test infer final layout."""
+class TestInferEndLayoutIntlist:
+    """Test infer end layout."""
 
     @mark.parametrize("target_num_qubits, layout_intlist", LAYOUT_NUM_INTLIST_TUPLES)
-    def test_infer_final_layout(self, target_num_qubits, layout_intlist):
-        """Test infer final layout base functionality."""
+    def test_infer_end_layout_intlist(self, target_num_qubits, layout_intlist):
+        """Test infer end layout base functionality."""
         num_qubits = len(layout_intlist)
         circuit = QuantumCircuit(num_qubits)
         circuit.measure_all()
         layout = layout_from_intlist(circuit, layout_intlist, target_num_qubits)
         transpiled_circuit = transpile_to_layout(circuit, layout)
-        assert infer_final_layout(circuit, transpiled_circuit) == layout
+        assert infer_end_layout_intlist(circuit, transpiled_circuit) == layout_intlist
+
+
+class TestInferEndLayout:
+    """Test infer end layout."""
+
+    @mark.parametrize("target_num_qubits, layout_intlist", LAYOUT_NUM_INTLIST_TUPLES)
+    def test_infer_end_layout(self, target_num_qubits, layout_intlist):
+        """Test infer end layout base functionality."""
+        num_qubits = len(layout_intlist)
+        circuit = QuantumCircuit(num_qubits)
+        circuit.measure_all()
+        layout = layout_from_intlist(circuit, layout_intlist, target_num_qubits)
+        transpiled_circuit = transpile_to_layout(circuit, layout)
+        assert infer_end_layout(circuit, transpiled_circuit) == layout
 
 
 class TestGetMeasuredQubits:
