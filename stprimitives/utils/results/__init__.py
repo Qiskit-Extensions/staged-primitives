@@ -20,7 +20,7 @@ from .reckoning import (
     reckon_observable,
     reckon_pauli,
 )
-from .results import bitflip_counts, mask_counts
+from .results import bitflip_counts, map_counts, mask_counts
 
 __all__ = [
     "ReckoningResult",
@@ -29,6 +29,7 @@ __all__ = [
     "reckon_observable",
     "ExpvalReckoner",
     "CanonicalReckoner",
+    "map_counts",
     "bitflip_counts",
     "mask_counts",
 ]

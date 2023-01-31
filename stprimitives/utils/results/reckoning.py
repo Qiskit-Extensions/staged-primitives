@@ -45,7 +45,7 @@ def reckon_expval(counts: Counts) -> ReckoningResult:
     therefore the resulting value can be regarded as coming from a multi-qubit Pauli-Z
     observable (i.e. a fully diagonal Pauli observable).
     """
-    shots = counts.shots() or 1  # Avoid division by zero errors if no counts
+    shots = counts.shots() or 1  # Note: avoid division by zero errors
     expval: float = 0.0
     for readout, freq in counts.int_raw.items():
         observation = (-1) ** parity_bit(readout, even=True)

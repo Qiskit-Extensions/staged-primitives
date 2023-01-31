@@ -15,12 +15,31 @@
 from pytest import mark
 from qiskit.result import Counts
 
-from stprimitives.utils.results import bitflip_counts, mask_counts
+from stprimitives.utils.results import bitflip_counts, map_counts, mask_counts
 
 
 ################################################################################
 ## TESTS
 ################################################################################
+class TestMapCounts:
+    """Test map counts."""
+
+    @mark.parametrize(
+        "counts, map, expected",
+        [
+            ({}, lambda _: None, {}),
+            ({0: 1}, lambda _: 0, {0: 1}),
+            ({0: 1}, lambda _: 1, {1: 1}),
+            ({0: 1, 1: 1}, lambda _: 1, {1: 2}),
+            ({0: 0, 1: 1}, lambda k: k + 1, {1: 0, 2: 1}),
+        ],
+    )
+    def test_map_counts(self, counts, map, expected):
+        """Test map counts base functionality."""
+        counts = Counts(counts)
+        assert map_counts(counts, map) == Counts(expected)
+
+
 class TestBitflipCounts:
     """Test bitflip counts."""
 

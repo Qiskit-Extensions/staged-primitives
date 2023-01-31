@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Callable
 
 from qiskit.result import Counts
 
@@ -22,6 +23,23 @@ from qiskit.result import Counts
 ################################################################################
 ## UTILS
 ################################################################################
+def map_counts(counts: Counts, mapper: Callable) -> Counts:
+    """Map counts by reassigning keys according to input callable.
+
+    Args:
+        counts: the counts to process.
+        mapper: the callable to map readout bits (i.e. counts keys).
+
+    Returns:
+        New counts with readout bits mapped according to input callable.
+    """
+    counts_dict: dict[int, int] = defaultdict(lambda: 0)
+    for readout, freq in counts.int_raw.items():
+        readout = mapper(readout)
+        counts_dict[readout] += freq
+    return Counts(counts_dict)
+
+
 def bitflip_counts(counts: Counts, bitflips: int) -> Counts:
     """Flip readout bits in counts according to the input bitflips (int encoded).
 
@@ -32,11 +50,7 @@ def bitflip_counts(counts: Counts, bitflips: int) -> Counts:
     Returns:
         New counts with readout bits flipped according to input.
     """
-    counts_dict: dict[int, int] = defaultdict(lambda: 0)
-    for readout, freq in counts.int_raw.items():
-        readout ^= bitflips
-        counts_dict[readout] += freq
-    return Counts(counts_dict)
+    return map_counts(counts, lambda readout: readout ^ bitflips)
 
 
 def mask_counts(counts: Counts, bitmask: int) -> Counts:
@@ -49,8 +63,4 @@ def mask_counts(counts: Counts, bitmask: int) -> Counts:
     Returns:
         New counts with readout bits masked according to input.
     """
-    counts_dict: dict[int, int] = defaultdict(lambda: 0)
-    for readout, freq in counts.int_raw.items():
-        readout &= bitmask
-        counts_dict[readout] += freq
-    return Counts(counts_dict)
+    return map_counts(counts, lambda readout: readout & bitmask)

@@ -70,12 +70,12 @@ def transpile_to_layout(circuit: QuantumCircuit, layout: Layout):
         layout: mapping between the virtual qubits in input circuit and physical qubits.
 
     Returns:
-        A transpiled ciruit with input layout applied.
+        A transpiled circuit with input layout applied.
     """
     passes = [SetLayout(layout=layout), ApplyLayout()]
     pass_manager = PassManager(passes=passes)
     transpiled = pass_manager.run(circuit)
-    transpiled.final_layout = layout  # TODO: remove after Qiskit-Terra 0.23
+    transpiled.final_layout = layout  # TODO: update after Qiskit-Terra 0.24
     return transpiled
 
 
