@@ -53,7 +53,7 @@ def bitflip_counts(counts: Counts, bitflips: int) -> Counts:
     return map_counts(counts, lambda readout: readout ^ bitflips)
 
 
-def mask_counts(counts: Counts, bitmask: int) -> Counts:
+def bitmask_counts(counts: Counts, bitmask: int) -> Counts:
     """Apply mask to readout bits in counts.
 
     Args:

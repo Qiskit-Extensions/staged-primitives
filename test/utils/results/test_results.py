@@ -15,7 +15,7 @@
 from pytest import mark
 from qiskit.result import Counts
 
-from stprimitives.utils.results import bitflip_counts, map_counts, mask_counts
+from stprimitives.utils.results import bitflip_counts, bitmask_counts, map_counts
 
 
 ################################################################################
@@ -78,7 +78,7 @@ class TestMaskCounts:
             ({0: 0, 1: 1, 2: 2, 3: 3}, 3, {0: 0, 1: 1, 2: 2, 3: 3}),
         ],
     )
-    def test_mask_counts(self, counts, mask, expected):
+    def test_bitmask_counts(self, counts, mask, expected):
         """Test mask counts base functionality."""
         counts = Counts(counts)
-        assert mask_counts(counts, mask) == Counts(expected)
+        assert bitmask_counts(counts, mask) == Counts(expected)

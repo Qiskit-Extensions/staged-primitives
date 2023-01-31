@@ -29,7 +29,7 @@ from qiskit.result import Counts
 from stprimitives.utils.binary import parity_bit
 from stprimitives.utils.operators import pauli_integer_mask
 
-from .results import mask_counts
+from .results import bitmask_counts
 
 ################################################################################
 ## UTILS
@@ -63,7 +63,7 @@ def reckon_pauli(counts: Counts, pauli: Pauli) -> ReckoningResult:
     readout; hence diagonalizing the input Pauli.
     """
     mask = pauli_integer_mask(pauli)
-    counts = mask_counts(counts, mask)
+    counts = bitmask_counts(counts, mask)
     return reckon_expval(counts)
 
 
