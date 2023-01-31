@@ -17,7 +17,7 @@ from __future__ import annotations
 from functools import reduce
 from typing import Any
 
-from numpy import arange, dtype, ndarray, packbits
+from numpy import arange, bool_, dtype, ndarray, packbits
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Pauli
 
@@ -56,6 +56,8 @@ def pauli_integer_mask(pauli: Pauli) -> int:
     This is an integer representation of the binary string with a
     1 where there are Paulis, and 0 where there are identities.
     """
-    pauli_mask: ndarray[Any, dtype[bool]] = pauli.z | pauli.x
-    packed_mask: list[int] = packbits(pauli_mask, bitorder="little").tolist()
+    pauli_mask: ndarray[Any, dtype[bool_]] = pauli.z | pauli.x
+    packed_mask: list[int] = packbits(  # pylint: disable=no-member
+        pauli_mask, bitorder="little"
+    ).tolist()
     return reduce(lambda value, element: (value << 8) | element, reversed(packed_mask))

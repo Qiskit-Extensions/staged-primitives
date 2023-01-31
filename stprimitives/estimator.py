@@ -193,9 +193,7 @@ class StagedEstimator(
         return transpiled_circuit
 
     def _bind_single_parameters(
-        self,
-        circuit: QuantumCircuit,
-        parameter_values: Sequence[float],
+        self, circuit: QuantumCircuit, parameter_values: Sequence[float]
     ) -> QuantumCircuit:
         # Note: for improved performance this method edits the input circuits in place.
         # This is fine as long as the input circuits are no longer needed.

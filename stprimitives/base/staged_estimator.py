@@ -152,9 +152,7 @@ class BaseStagedEstimator(BaseEstimator):  # pylint: disable=too-few-public-meth
 
     @abstractmethod
     def _bind_single_parameters(
-        self,
-        circuit: QuantumCircuit,
-        parameter_values: Sequence[float],
+        self, circuit: QuantumCircuit, parameter_values: Sequence[float]
     ) -> QuantumCircuit:
         """Single circuit equivalent of ``_bind_parameters``."""
 
