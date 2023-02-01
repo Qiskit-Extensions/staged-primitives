@@ -21,7 +21,7 @@ from pytest import mark, raises
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.random import random_circuit
 
-from stprimitives.utils.circuits import (
+from staged_primitives.utils.circuits import (
     compose_circuits_w_metadata,
     get_measured_qubits,
     infer_end_layout,

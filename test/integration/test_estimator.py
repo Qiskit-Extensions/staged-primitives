@@ -24,7 +24,7 @@ from qiskit.providers import JobV1
 from qiskit.providers.fake_provider import FakeNairobi, FakeNairobiV2
 from qiskit.quantum_info.operators import SparsePauliOp
 
-from stprimitives.estimator import StagedEstimator
+from staged_primitives.estimator import StagedEstimator
 
 from . import TestFromQiskit, TestOnBackends
 

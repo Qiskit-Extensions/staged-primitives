@@ -18,7 +18,7 @@ from pytest import mark
 from qiskit.opflow import PauliSumOp
 from qiskit.quantum_info.operators import Pauli, PauliList, SparsePauliOp
 
-from stprimitives.utils.operators import (
+from staged_primitives.utils.operators import (
     AbelianDecomposer,
     NaiveDecomposer,
     OperatorDecomposer,

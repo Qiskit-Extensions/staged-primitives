@@ -26,8 +26,7 @@ from qiskit.providers import Options
 from qiskit.result import Counts, QuasiDistribution, Result
 from qiskit.transpiler import PassManager, StagedPassManager
 
-from stprimitives.base import BaseStagedSampler
-from stprimitives.utils.circuits import infer_end_layout_intlist
+from staged_primitives.base import BaseStagedSampler
 
 
 class StagedSampler(
@@ -126,24 +125,10 @@ class StagedSampler(
     ## IMPLEMENTATION
     ################################################################################
     def _transpile_single_unbound(self, circuit: QuantumCircuit) -> QuantumCircuit:
-        # TODO: use native `layout` attr after Qiskit-Terra 0.24 release
-        # Note: We currently need to use a hacky way to account for the end
-        # layout of the transpiled circuit. We insert temporary measurements
-        # to keep track of the repositioning of the different qubits.
-        original_circuit = circuit.copy()  # To insert measurements
-        original_circuit.measure_all()  # To keep track of the final layout
         if self.skip_transpilation:
-            transpiled_circuit = original_circuit
-        else:
-            transpile_options = {**self.transpile_options.__dict__}
-            transpiled_circuit = transpile(original_circuit, self.backend, **transpile_options)
-        end_layout_intlist = infer_end_layout_intlist(original_circuit, transpiled_circuit)
-        transpiled_circuit.remove_final_measurements()
-        # TODO: default `QuantumCircuit.metadata` to {} (i.e. Qiskit-Terra)
-        if transpiled_circuit.metadata is None:
-            transpiled_circuit.metadata = {}
-        transpiled_circuit.metadata.update({"end_layout_intlist": end_layout_intlist})
-        return transpiled_circuit
+            return circuit
+        transpile_options = {**self.transpile_options.__dict__}
+        return transpile(circuit, self.backend, **transpile_options)
 
     def _bind_single_parameters(
         self, circuit: QuantumCircuit, parameter_values: Sequence[float]
@@ -154,7 +139,6 @@ class StagedSampler(
         return circuit
 
     def _transpile_single_bound(self, circuit: QuantumCircuit) -> QuantumCircuit:
-        # TODO: update `end_layout_intlist`
         # TODO: if not self.skip_transpilation:
         circuit = self.bound_pass_manager.run(circuit)
         return circuit

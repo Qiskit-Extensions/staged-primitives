@@ -11,9 +11,9 @@ This guide is for those who just want to use the package. If you want to extend 
     - [Beyond](#beyond)
 2. [Using the module](#using-the-module)
     - [Compatibility](#compatibility)
-    - [ZNE configuration](#stprimitives-configuration)
-    - [ZNE metadata](#stprimitives-metadata)
-    - [Custom ZNE strategies](#custom-stprimitives-strategies)
+    - [ZNE configuration](#staged_primitives-configuration)
+    - [ZNE metadata](#staged_primitives-metadata)
+    - [Custom ZNE strategies](#custom-staged_primitives-strategies)
 3. [Current limitations](#current-limitations)
     - [Noise Amplification](#noise-amplification)
     - [Max experiments](#max-experiments)
@@ -36,47 +36,47 @@ This module works by injecting _zero noise extrapolation_ (ZNE) capabilities in 
 
 For an introduction and instructions to the _Estimator_ primitive, refer to the [this tutorial](/docs/tutorials/0-estimator.ipynb). For information on how to use it on real quantum hardware visit the[Qiskit IBM Runtime documentation](https://qiskit.org/documentation/partners/qiskit_ibm_runtime/) and the [Qiskit IBM Runtime repo](https://github.com/Qiskit/qiskit-ibm-runtime) on GitHub. Other demo [tutorials](/docs/tutorials) are also available in the present repo.
 
-For a more detailed, hands-on, explanation of the functionalities in this module consult [this tutorial](./tutorials/1-stprimitives.ipynb).
+For a more detailed, hands-on, explanation of the functionalities in this module consult [this tutorial](./tutorials/1-staged_primitives.ipynb).
 
 ### Compatibility
 To inject the ZNE functionality into a pre-existing `Estimator` class following the official _Estimator_ specification (i.e. Qiskit Terra's `BaseEstimator`), simply do the following:
 ```python
-from stprimitives import stprimitives
+from staged_primitives import staged_primitives
 
-ZNEEstimator = stprimitives(Estimator)
+ZNEEstimator = staged_primitives(Estimator)
 estimator = ZNEEstimator(...)  # Same args as `Estimator`
 ```
 
 Notice, however, that error mitigation techniques only make sense in the context of noisy computations; therefore using ZNE on noisless platforms (e.g. simulators), although technically possible, will not produce better results.
 
-If no ZNE config options are provided (i.e. `stprimitives_strategy`), the `ZNEEstimator` class behaves exactly like its parent `Estimator` class.
+If no ZNE config options are provided (i.e. `staged_primitives_strategy`), the `ZNEEstimator` class behaves exactly like its parent `Estimator` class.
 
 ### ZNE configuration
 In order to perform ZNE error mitigation, we simply declare its configuration options through a `ZNEStrategy` object, and pass it along to the `ZNEEstimator` during instantiation:
 ```python
-from stprimitives import ZNEStrategy
-from stprimitives.extrapolation import LinearExtrapolator
-from stprimitives.noise_amplification import CxAmplifier
+from staged_primitives import ZNEStrategy
+from staged_primitives.extrapolation import LinearExtrapolator
+from staged_primitives.noise_amplification import CxAmplifier
 
-stprimitives_strategy = ZNEStrategy(
+staged_primitives_strategy = ZNEStrategy(
     noise_amplifier=CxAmplifier(),
     noise_factors=(1, 3, 5),
     extrapolator=LinearExtrapolator(),
 )
 
 # For some `circuit` and `observable`
-job = estimator.run(circuit, observable, stprimitives_strategy=stprimitives_strategy)
+job = estimator.run(circuit, observable, staged_primitives_strategy=staged_primitives_strategy)
 result = job.result()
 ```
-where the `noise_amplifier` strategy is an object in charge of performing noise amplification on the input circuits according to the provided `noise_factors`; and the `extrapolator` strategy is another object used for extrapolating the noisy results to the zero noise limit. For more information on these, check out our guide on how to [configure ZNE](./tutorials/1-stprimitives.ipynb).
+where the `noise_amplifier` strategy is an object in charge of performing noise amplification on the input circuits according to the provided `noise_factors`; and the `extrapolator` strategy is another object used for extrapolating the noisy results to the zero noise limit. For more information on these, check out our guide on how to [configure ZNE](./tutorials/1-staged_primitives.ipynb).
 
-This package also provides libraries of pre-programmed [extrapolators](/stprimitives/extrapolation) and [noise amplifiers](/stprimitives/noise_amplification) which can be conveniently retrieved in dictionary form as showcased below. For more information, inspect the relevant modules (linked).
+This package also provides libraries of pre-programmed [extrapolators](/staged_primitives/extrapolation) and [noise amplifiers](/staged_primitives/noise_amplification) which can be conveniently retrieved in dictionary form as showcased below. For more information, inspect the relevant modules (linked).
 ```python
-from stprimitives import EXTRAPOLATOR_LIBRARY, NOISE_AMPLIFIER_LIBRARY
+from staged_primitives import EXTRAPOLATOR_LIBRARY, NOISE_AMPLIFIER_LIBRARY
 ```
 
 ### ZNE metadata
-If ZNE error mitigation is performed, the `ZNEEstimator` object will add relevant information about the ZNE process to the returned `EstimatorResult` metadata field. Note that `result.values` now contains the mitigated (i.e. zero noise extrapolated) expectation values. The measured expectation values at different noise factor values that have been used for the extrapolation are instead stored in `result.metadata[0]['stprimitives']['noise_amplification']['values']`. For example:
+If ZNE error mitigation is performed, the `ZNEEstimator` object will add relevant information about the ZNE process to the returned `EstimatorResult` metadata field. Note that `result.values` now contains the mitigated (i.e. zero noise extrapolated) expectation values. The measured expectation values at different noise factor values that have been used for the extrapolation are instead stored in `result.metadata[0]['staged_primitives']['noise_amplification']['values']`. For example:
 ```
 EstimatorResult: {
   "values": [
@@ -84,7 +84,7 @@ EstimatorResult: {
   ],
   "metadata": [
     {
-      "stprimitives": {
+      "staged_primitives": {
         "noise_amplification": {
           "noise_amplifier": "<CxAmplifier:{'noise_factor_relative_tolerance': 0.01, 'random_seed': None, 'sub_folding_option': 'from_first'}>",
           "noise_factors": [
@@ -120,8 +120,8 @@ EstimatorResult: {
 ### Custom ZNE strategies
 This prototype has been devised specifically to allow users to create their custom noise amplification and extrapolation techniques. This can be easily done through custom implementations of the `CircuitNoiseAmplifier` and `Extrapolator` abstract classes respectively:
 ```python
-from stprimitives.extrapolation import Extrapolator
-from stprimitives.noise_amplification import CircuitNoiseAmplifier
+from staged_primitives.extrapolation import Extrapolator
+from staged_primitives.noise_amplification import CircuitNoiseAmplifier
 
 ############################  NOISE AMPLIFIER  ############################
 class CustomAmplifier(CircuitNoiseAmplifier):
@@ -184,7 +184,7 @@ where we only need to implement a number of (performing) methods with the approp
 
 Finally, we simply pass instances of these to the constructor through the `ZNEStrategy` object:
 ```python
-stprimitives_strategy = ZNEStrategy(
+staged_primitives_strategy = ZNEStrategy(
     noise_amplifier=CustomAmplifier(),
     noise_factors=(1, 3),
     extrapolator=CustomExtrapolator(),

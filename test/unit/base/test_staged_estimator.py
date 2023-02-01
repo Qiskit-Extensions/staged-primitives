@@ -19,7 +19,7 @@ from pytest import fixture, mark
 from qiskit.primitives import EstimatorResult
 from qiskit.providers import JobV1
 
-from stprimitives.base import BaseStagedEstimator
+from staged_primitives.base import BaseStagedEstimator
 
 
 ################################################################################

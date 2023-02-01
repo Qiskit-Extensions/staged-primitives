@@ -82,7 +82,7 @@ notebook = [
 "Download" = "https://pypi.org/project/staged-primitives/"
 
 [tool.flit.module]
-name = "stprimitives"
+name = "staged_primitives"
 
 
 ############################################################

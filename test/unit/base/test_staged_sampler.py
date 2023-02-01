@@ -19,7 +19,7 @@ from pytest import fixture, mark
 from qiskit.primitives import SamplerResult
 from qiskit.providers import JobV1
 
-from stprimitives.base import BaseStagedSampler
+from staged_primitives.base import BaseStagedSampler
 
 
 ################################################################################

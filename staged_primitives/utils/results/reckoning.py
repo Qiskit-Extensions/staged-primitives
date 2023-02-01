@@ -26,8 +26,8 @@ from qiskit.quantum_info.operators import Pauli, SparsePauliOp
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.result import Counts
 
-from stprimitives.utils.binary import parity_bit
-from stprimitives.utils.operators import pauli_integer_mask
+from staged_primitives.utils.binary import parity_bit
+from staged_primitives.utils.operators import pauli_integer_mask
 
 from .results import bitmask_counts
 

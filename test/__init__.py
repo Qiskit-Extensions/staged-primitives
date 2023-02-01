@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from stprimitives import __version__
+from staged_primitives import __version__
 
 
 def test_version():

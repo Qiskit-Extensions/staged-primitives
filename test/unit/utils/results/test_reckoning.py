@@ -18,7 +18,7 @@ from pytest import mark, raises
 from qiskit.quantum_info.operators import Pauli, SparsePauliOp
 from qiskit.result import Counts
 
-from stprimitives.utils.results.reckoning import (
+from staged_primitives.utils.results.reckoning import (
     CanonicalReckoner,
     ExpvalReckoner,
     ReckoningResult,

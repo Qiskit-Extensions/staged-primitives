@@ -16,12 +16,12 @@ from pytest import mark
 from qiskit.providers.fake_provider import FakeNairobi, FakeNairobiV2
 
 
-@mark.filterwarnings("ignore:.*qiskit-aer.*")
+@mark.filterwarnings("ignore:.*Aer.*")
 class TestFromQiskit:
     """All tests under this class and subclasses were ported from Qiskit-Terra."""
 
 
-@mark.filterwarnings("ignore:.*qiskit-aer.*")
+@mark.filterwarnings("ignore:.*Aer.*")
 @mark.parametrize("backend", [FakeNairobi(), FakeNairobiV2()])
 class TestOnBackends:
     """Integration tests on backends"""

@@ -29,7 +29,7 @@ from qiskit.providers.fake_provider import FakeManhattan, FakeManhattanV2
 from qiskit.result import Counts, QuasiDistribution
 from qiskit.transpiler import PassManager
 
-from stprimitives.sampler import StagedSampler
+from staged_primitives.sampler import StagedSampler
 
 
 ################################################################################
@@ -127,7 +127,7 @@ class TestImplementation:
         if num_qubits % 2:  # Note: only sometimes to test both w/ and w/o metadata
             circuit.metadata = {}
         # Test
-        with patch("stprimitives.sampler.transpile") as mock:
+        with patch("staged_primitives.sampler.transpile") as mock:
             mock.side_effect = lambda c, *_, **__: transpile(c, initial_layout=layout_intlist)
             transpiled_circuit = sampler._transpile_single_unbound(circuit)
         if sampler.skip_transpilation:

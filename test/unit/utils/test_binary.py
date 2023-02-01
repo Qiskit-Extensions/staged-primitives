@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from pytest import mark
 
-from stprimitives.utils.binary import parity_bit
+from staged_primitives.utils.binary import parity_bit
 
 
 ################################################################################

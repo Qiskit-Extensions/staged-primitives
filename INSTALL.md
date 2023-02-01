@@ -148,15 +148,15 @@ pip install -e ".[<OPT-BUN-1>,<OPT-BUN-2>]"
 
 Users may now run the demo notebooks on their local machine (optional dependencies apply), or use the package in their own software by simply importing it:
 ```python
-import stprimitives
+import staged_primitives
 ```
 From the terminal:
 ```
 $ python
 Python 3.10.5 (main, Jun 23 2022, 17:15:25) [Clang 13.1.6 (clang-1316.0.21.2.5)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
->>> import stprimitives
->>> print(stprimitives)
-<module 'stprimitives' from '.venv/lib/python3.10/site-packages/stprimitives/__init__.py'>
+>>> import staged_primitives
+>>> print(staged_primitives)
+<module 'staged_primitives' from '.venv/lib/python3.10/site-packages/staged_primitives/__init__.py'>
 ```
 For instructions on how to use this package see [here](docs/reference_guide.md).

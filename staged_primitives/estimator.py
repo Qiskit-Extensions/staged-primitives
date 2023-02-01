@@ -27,18 +27,18 @@ from qiskit.quantum_info.operators import PauliList, SparsePauliOp
 from qiskit.result import Counts, Result
 from qiskit.transpiler import PassManager, StagedPassManager
 
-from stprimitives.base import BaseStagedEstimator
-from stprimitives.utils.circuits import (
+from staged_primitives.base import BaseStagedEstimator
+from staged_primitives.utils.circuits import (
     compose_circuits_w_metadata,
     infer_end_layout_intlist,
 )
-from stprimitives.utils.operators import (
+from staged_primitives.utils.operators import (
     AbelianDecomposer,
     NaiveDecomposer,
     OperatorDecomposer,
     build_pauli_measurement,
 )
-from stprimitives.utils.results import (
+from staged_primitives.utils.results import (
     CanonicalReckoner,
     ExpvalReckoner,
     ReckoningResult,

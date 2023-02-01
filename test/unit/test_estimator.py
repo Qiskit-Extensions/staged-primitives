@@ -30,9 +30,9 @@ from qiskit.quantum_info.operators import SparsePauliOp
 from qiskit.result import Counts
 from qiskit.transpiler import PassManager
 
-from stprimitives.estimator import StagedEstimator
-from stprimitives.utils.operators import AbelianDecomposer, NaiveDecomposer
-from stprimitives.utils.results import CanonicalReckoner, ReckoningResult
+from staged_primitives.estimator import StagedEstimator
+from staged_primitives.utils.operators import AbelianDecomposer, NaiveDecomposer
+from staged_primitives.utils.results import CanonicalReckoner, ReckoningResult
 
 
 ################################################################################
@@ -241,7 +241,7 @@ class TestImplementation:
         if num_qubits % 2:  # Note: only sometimes to test both w/ and w/o metadata
             circuit.metadata = {}
         # Test
-        with patch("stprimitives.estimator.transpile") as mock:
+        with patch("staged_primitives.estimator.transpile") as mock:
             mock.side_effect = lambda c, *_, **__: transpile(c, initial_layout=layout_intlist)
             transpiled_circuit = estimator._transpile_single_unbound(circuit)
         if estimator.skip_transpilation:
@@ -294,7 +294,7 @@ class TestImplementation:
         layout_intlist = tuple(layout_intlist)
         base.metadata = {"end_layout_intlist": layout_intlist}
         # Test
-        with patch("stprimitives.estimator.transpile", spec=True) as mock:
+        with patch("staged_primitives.estimator.transpile", spec=True) as mock:
             mock.side_effect = transpile_layout_only  # Note: auxiliary function
             circuits = estimator._observe_single_circuit(base.copy(), observable)
         assert len(circuits) == len(measurements)

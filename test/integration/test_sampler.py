@@ -224,6 +224,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         for i in range(k):
             assert dicts_almost_equal(result.quasi_dists[i], target.quasi_dists[i], delta=0.1)
 
+    @mark.filterwarnings("ignore:.*seed.*")
     def test_run_with_shots_option(self, backend):
         """test with shots option."""
         pqc = RealAmplitudes(num_qubits=2, reps=2)
