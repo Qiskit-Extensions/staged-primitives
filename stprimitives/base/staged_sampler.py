@@ -44,7 +44,7 @@ class BaseStagedSampler(BaseSampler):  # pylint: disable=too-few-public-methods
         parameter_values: tuple[tuple[float, ...], ...],
         **run_options,
     ) -> SamplerResult:
-        """Estimate expectation values for the given circuits pairs."""
+        """Sample quasi-probability distribution for the given circuits."""
         circuits = self._transpile_unbound(circuits)
         circuits = self._bind_parameters(circuits, parameter_values)
         circuits = self._transpile_bound(circuits)
