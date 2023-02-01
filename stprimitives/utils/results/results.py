@@ -34,7 +34,7 @@ def map_counts(counts: Counts, mapper: Callable) -> Counts:
         New counts with readout bits mapped according to input callable.
     """
     counts_dict: dict[int, int] = defaultdict(lambda: 0)
-    for readout, freq in counts.int_raw.items():
+    for readout, freq in counts.int_outcomes().items():
         readout = mapper(readout)
         counts_dict[readout] += freq
     return Counts(counts_dict)

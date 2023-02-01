@@ -47,7 +47,7 @@ def reckon_expval(counts: Counts) -> ReckoningResult:
     """
     shots = counts.shots() or 1  # Note: avoid division by zero errors
     expval: float = 0.0
-    for readout, freq in counts.int_raw.items():
+    for readout, freq in counts.int_outcomes().items():
         observation = (-1) ** parity_bit(readout, even=True)
         expval += observation * freq / shots
     variance = 1 - expval**2
