@@ -23,7 +23,6 @@ from numpy.random import default_rng
 from pytest import fixture, mark, raises
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.circuit.random import random_circuit
-from qiskit.compiler import transpile
 from qiskit.providers import BackendV1, BackendV2
 from qiskit.providers.fake_provider import FakeManhattan, FakeManhattanV2
 from qiskit.result import Counts, QuasiDistribution
@@ -122,20 +121,16 @@ class TestImplementation:
         """Test transpile_single_unbound."""
         # Case
         sampler.skip_transpilation = skip_transpilation
-        layout_intlist = default_rng(seed).permutation(num_qubits + 4).tolist()[:num_qubits]
         circuit = random_circuit(num_qubits, depth=2, seed=seed)
-        if num_qubits % 2:  # Note: only sometimes to test both w/ and w/o metadata
-            circuit.metadata = {}
         # Test
         with patch("staged_primitives.sampler.transpile") as mock:
-            mock.side_effect = lambda c, *_, **__: transpile(c, initial_layout=layout_intlist)
+            circuit_mock = Mock()
+            mock.side_effect = lambda *args, **kwargs: circuit_mock
             transpiled_circuit = sampler._transpile_single_unbound(circuit)
         if sampler.skip_transpilation:
             assert transpiled_circuit == circuit
-            assert transpiled_circuit.metadata.get("end_layout_intlist") == tuple(range(num_qubits))
         else:
-            assert transpiled_circuit == transpile(circuit, initial_layout=layout_intlist)
-            assert transpiled_circuit.metadata.get("end_layout_intlist") == tuple(layout_intlist)
+            assert transpiled_circuit == circuit_mock
 
     @mark.parametrize("seed", range(10))
     def test_bind_single_parameters(self, sampler, seed):

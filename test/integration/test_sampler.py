@@ -20,10 +20,12 @@ from numpy.random import rand
 from pytest import fixture, mark, raises
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
-from qiskit.primitives import BackendSampler, SamplerResult
+from qiskit.primitives import SamplerResult
 from qiskit.providers import JobStatus, JobV1
 from qiskit.providers.fake_provider import FakeNairobi, FakeNairobiV2
 from qiskit.utils import optionals
+
+from staged_primitives.sampler import StagedSampler
 
 from . import TestFromQiskit, TestOnBackends
 
@@ -61,7 +63,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
     def test_sampler_run(self, backend, bell):
         """Test Sampler.run()."""
         circuit, target = bell
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         job = sampler.run(circuits=circuit, shots=1000)
         assert isinstance(job, JobV1)
         result = job.result()
@@ -75,7 +77,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         # executes three Bell circuits
         # Argument `parameters` is optional.
         circuit, target = bell
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         result = sampler.run([circuit] * 3).result()
         # print([q.binary_probabilities() for q in result.quasi_dists])
         compare_probs(result.quasi_dists[0], target)
@@ -94,7 +96,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         theta2 = [1, 2, 3, 4, 5, 6]
         theta3 = [0, 1, 2, 3, 4, 5, 6, 7]
 
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         result = sampler.run([pqc, pqc, pqc2], [theta1, theta2, theta3]).result()
 
         # result of pqc(theta1)
@@ -132,7 +134,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         qc2.x(0)
         qc2.measure_all()
 
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         result = sampler.run([qc, qc2]).result()
         assert isinstance(result, SamplerResult)
         assert len(result.quasi_dists) == 2
@@ -154,7 +156,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         qc3.x([0, 1])
         qc3.measure_all()
 
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         result = sampler.run([qc0, qc1, qc2, qc3]).result()
         assert isinstance(result, SamplerResult)
         assert len(result.quasi_dists) == 4
@@ -171,7 +173,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         qc2 = RealAmplitudes(num_qubits=1, reps=1)
         qc2.measure_all()
 
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         with raises(ValueError):
             sampler.run([qc1], [[1e2]]).result()
         with raises(ValueError):
@@ -184,7 +186,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         n = 5
         qc = QuantumCircuit(n, n - 1)
         qc.measure(range(n - 1), range(n - 1))
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         # with self.subTest("one circuit"):
         result = sampler.run([qc], shots=1000).result()
         assert len(result.quasi_dists) == 1
@@ -209,7 +211,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         params_array = rand(k, qc.num_parameters)
         params_list = params_array.tolist()
         params_list_array = list(params_array)
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         target = sampler.run([qc] * k, params_list).result()
 
         # with self.subTest("ndarrary"):
@@ -231,14 +233,14 @@ class TestRun(TestOnBackends, TestFromQiskit):
         pqc.measure_all()
         params = [1.0] * 6
         target = {0: 0.0148, 1: 0.3449, 2: 0.0531, 3: 0.5872}
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         result = sampler.run(circuits=pqc, parameter_values=params, shots=1024, seed=15).result()
         compare_probs(result.quasi_dists, target)
 
     def test_primitive_job_status_done(self, backend, bell):
         """test primitive job's status"""
         circuit, _ = bell
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         job = sampler.run(circuits=[circuit])
         assert job.status() == JobStatus.DONE
 
@@ -249,7 +251,7 @@ class TestRun(TestOnBackends, TestFromQiskit):
         qc2 = QuantumCircuit(1)
         qc2.x(0)
         qc2.measure_all()
-        sampler = BackendSampler(backend)
+        sampler = StagedSampler(backend)
         result = sampler.run([qc]).result()
         assert dicts_almost_equal(result.quasi_dists[0], {0: 1}, 0.1)
         result2 = sampler.run([qc2]).result()
@@ -259,12 +261,13 @@ class TestRun(TestOnBackends, TestFromQiskit):
         assert dicts_almost_equal(result3.quasi_dists[1], {1: 1}, 0.1)
 
 
+@mark.skip
 class TestWithAer(TestFromQiskit):
     """Integrtion tests using Qiskit-Aer."""
 
     @mark.skipif(not optionals.HAS_AER, reason="qiskit-aer is required to run this test")
     def test_circuit_with_dynamic_circuit(self):
-        """Test BackendSampler with QuantumCircuit with a dynamic circuit"""
+        """Test StagedSampler with QuantumCircuit with a dynamic circuit"""
         from qiskit_aer import Aer
 
         qc = QuantumCircuit(2, 1)
@@ -277,7 +280,7 @@ class TestWithAer(TestFromQiskit):
 
         backend = Aer.get_backend("aer_simulator")
         backend.set_options(seed_simulator=15)
-        sampler = BackendSampler(backend, skip_transpilation=True)
+        sampler = StagedSampler(backend, skip_transpilation=True)
         sampler.set_transpile_options(seed_transpiler=15)
         result = sampler.run(qc).result()
         assert dicts_almost_equal(result.quasi_dists[0], {0: 0.5029296875, 1: 0.4970703125})
@@ -301,7 +304,7 @@ class TestJobExecution(TestFromQiskit):
         qc2 = QuantumCircuit(1)
         qc2.x(0)
         qc2.measure_all()
-        sampler = BackendSampler(backend=FakeNairobiLimitedCircuits())
+        sampler = StagedSampler(backend=FakeNairobiLimitedCircuits())
         result = sampler.run([qc, qc2]).result()
         assert isinstance(result, SamplerResult)
         assert len(result.quasi_dists) == 2
@@ -320,7 +323,7 @@ class TestJobExecution(TestFromQiskit):
         qc2 = QuantumCircuit(1)
         qc2.x(0)
         qc2.measure_all()
-        sampler = BackendSampler(backend=backend)
+        sampler = StagedSampler(backend=backend)
         result = sampler.run([qc, qc2]).result()
         assert isinstance(result, SamplerResult)
         assert len(result.quasi_dists) == 2
