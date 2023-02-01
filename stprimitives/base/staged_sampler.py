@@ -120,7 +120,7 @@ class BaseStagedSampler(BaseSampler):  # pylint: disable=too-few-public-methods
 
     @abstractmethod
     def _build_single_result(self, counts: Counts) -> SamplerResult:
-        """Single circuit equivalent of ``_build_results``."""
+        """Single counts equivalent of ``_build_results``."""
 
     ################################################################################
     ## DEPRECATED

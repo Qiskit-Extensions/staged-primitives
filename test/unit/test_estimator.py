@@ -319,8 +319,6 @@ class TestImplementation:
             circuit.metadata = {"index": i}  # Note: test metadata gets transferred
         # Test
         counts_list = estimator._execute(circuits, shots=12)
-        print([c.metadata for c in circuits])
-        print([c.metadata for c in counts_list])
         for counts, circuit in zip(counts_list, circuits):
             assert counts.metadata == circuit.metadata
 
@@ -381,7 +379,6 @@ class TestImplementation:
         result = estimator._build_single_result(counts_list)
         assert len(result.values) == len(result.metadata) == 1
         assert result.values[0] == expval
-        print(metadata)
         assert isclose(result.metadata[0]["variance"], metadata["variance"])
         assert isclose(result.metadata[0]["std_dev"], metadata["std_dev"])
         assert isclose(result.metadata[0]["std_error"], metadata["std_error"])
