@@ -20,7 +20,8 @@
 # review/merging of PRs in different subsections of the repository.
 
 # Global rule, unless specialized by a later one
-* @Qiskit-Extensions/qiskit-prototypes
+* @Qiskit-Extensions/prototypes
+* @Qiskit-Extensions/primitives
 
 # Folders (also their corresponding tests)
 
