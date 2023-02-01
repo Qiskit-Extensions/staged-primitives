@@ -221,4 +221,4 @@ This means that, for `n` noise factors and `m` circuit-observable combinations, 
 
 ## Troubleshooting
 
-If you run into problems while using this package, we encourage a careful reading of the error messages first. Efforts have been made to make this messages as descriptive and helpful as possible; nonetheless, if still unable to solve the problem, you are welcome to [open an issue](https://github.com/qiskit-extensions/staged-primitives/issues) on the GitHub repository. When doing so, please provide a detailed explanation of what is happening and what needs to be done to reproduce the faulty behavior.
+If you run into problems while using this package, we encourage a careful reading of the error messages first. Efforts have been made to make this messages as descriptive and helpful as possible; nonetheless, if still unable to solve the problem, you are welcome to [open an issue](https://github.com/Qiskit-Extensions/staged-primitives/issues) on the GitHub repository. When doing so, please provide a detailed explanation of what is happening and what needs to be done to reproduce the faulty behavior.

@@ -5,17 +5,17 @@
   [![Python](https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-informational)](https://www.python.org/)
   [![Qiskit Terra](https://img.shields.io/badge/Qiskit%20Terra-%E2%89%A5%200.22.2-6133BD)](https://github.com/Qiskit/qiskit-terra)
 <br />
-  [![Tests](https://github.com/qiskit-extensions/staged-primitives/actions/workflows/test.yml/badge.svg)](https://github.com/qiskit-extensions/staged-primitives/actions/workflows/test.yml)
-  [![Coverage](https://coveralls.io/repos/github/qiskit-extensions/staged-primitives/badge.svg?branch=main)](https://coveralls.io/github/qiskit-extensions/staged-primitives?branch=main)
-  [![Release](https://img.shields.io/github/release/qiskit-extensions/staged-primitives.svg?include_prereleases&label=Release)](https://github.com/qiskit-extensions/staged-primitives/releases)
-  [![License](https://img.shields.io/github/license/qiskit-extensions/staged-primitives?label=License)](LICENSE.txt)
+  [![Tests](https://github.com/Qiskit-Extensions/staged-primitives/actions/workflows/test.yml/badge.svg)](https://github.com/Qiskit-Extensions/staged-primitives/actions/workflows/test.yml)
+  [![Coverage](https://coveralls.io/repos/github/Qiskit-Extensions/staged-primitives/badge.svg?branch=main)](https://coveralls.io/github/Qiskit-Extensions/staged-primitives?branch=main)
+  [![Release](https://img.shields.io/github/release/Qiskit-Extensions/staged-primitives.svg?include_prereleases&label=Release)](https://github.com/Qiskit-Extensions/staged-primitives/releases)
+  [![License](https://img.shields.io/github/license/Qiskit-Extensions/staged-primitives?label=License)](LICENSE.txt)
 
 </div>
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
   <!-- <a href="README.md">
-    <img src="https://github.com/qiskit-extensions/staged-primitives/blob/main/docs/media/cover.png?raw=true" alt="Logo" width="300">
+    <img src="https://github.com/Qiskit-Extensions/staged-primitives/blob/main/docs/media/cover.png?raw=true" alt="Logo" width="300">
   </a> -->
   <h2 align="center">Staged Primitives</h2>
 </p>
@@ -43,15 +43,15 @@
 7. [License](#license)
 
 #### For users
-1. [Installation](https://github.com/qiskit-extensions/staged-primitives/tree/main/INSTALL.md)
-2. [Tutorials](https://github.com/qiskit-extensions/staged-primitives/tree/main/docs/tutorials/)
-3. [Reference Guide](https://github.com/qiskit-extensions/staged-primitives/tree/main/docs/reference_guide.md)
-4. [How-tos](https://github.com/qiskit-extensions/staged-primitives/tree/main/docs/how_tos/)
-5. [Explanations](https://github.com/qiskit-extensions/staged-primitives/tree/main/docs/explanations/)
-6. [How to Give Feedback](https://github.com/qiskit-extensions/staged-primitives/tree/main/CONTRIBUTING.md#giving-feedback)
+1. [Installation](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/INSTALL.md)
+2. [Tutorials](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/docs/tutorials/)
+3. [Reference Guide](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/docs/reference_guide.md)
+4. [How-tos](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/docs/how_tos/)
+5. [Explanations](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/docs/explanations/)
+6. [How to Give Feedback](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/CONTRIBUTING.md#giving-feedback)
 
 #### For developers
-1. [Contribution Guidelines](https://github.com/qiskit-extensions/staged-primitives/tree/main/CONTRIBUTING.md)
+1. [Contribution Guidelines](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/CONTRIBUTING.md)
 
 
 ----------------------------------------------------------------------
@@ -72,7 +72,7 @@ Check out our [landing page](https://qiskit-community.github.io/prototypes/) and
 
 ### Deprecation Policy
 
-Prototypes are meant to evolve rapidly and, as such, do not follow [Qiskit's deprecation policy](https://qiskit.org/documentation/contributing_to_qiskit.html#deprecation-policy). We may occasionally make breaking changes in order to improve the user experience. When possible, we will keep old interfaces and mark them as deprecated, as long as they can co-exist with the new ones. Each substantial improvement, breaking change, or deprecation will be documented in [`CHANGELOG.md`](https://github.com/qiskit-extensions/staged-primitives/tree/main/CHANGELOG.md).
+Prototypes are meant to evolve rapidly and, as such, do not follow [Qiskit's deprecation policy](https://qiskit.org/documentation/contributing_to_qiskit.html#deprecation-policy). We may occasionally make breaking changes in order to improve the user experience. When possible, we will keep old interfaces and mark them as deprecated, as long as they can co-exist with the new ones. Each substantial improvement, breaking change, or deprecation will be documented in [`CHANGELOG.md`](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/CHANGELOG.md).
 
 
 ----------------------------------------------------------------------
@@ -97,4 +97,4 @@ Importantly, *[Qiskit IBM Runtime](https://qiskit.org/documentation/partners/qis
 ----------------------------------------------------------------------
 
 ### License
-[Apache License 2.0](https://github.com/qiskit-extensions/staged-primitives/tree/main/LICENSE.txt)
+[Apache License 2.0](https://github.com/Qiskit-Extensions/staged-primitives/tree/main/LICENSE.txt)

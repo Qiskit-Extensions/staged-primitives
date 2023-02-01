@@ -77,8 +77,8 @@ notebook = [
 
 [project.urls]
 "Home" = "https://qiskit-community.github.io/prototypes/"
-"Documentation" = "https://github.com/qiskit-extensions/staged-primitives/tree/main/docs/"
-"Repository" = "https://github.com/qiskit-extensions/staged-primitives/"
+"Documentation" = "https://github.com/Qiskit-Extensions/staged-primitives/tree/main/docs/"
+"Repository" = "https://github.com/Qiskit-Extensions/staged-primitives/"
 "Download" = "https://pypi.org/project/staged-primitives/"
 
 [tool.flit.module]
