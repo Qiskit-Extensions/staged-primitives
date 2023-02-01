@@ -261,13 +261,15 @@ class TestRun(TestOnBackends, TestFromQiskit):
         assert dicts_almost_equal(result3.quasi_dists[1], {1: 1}, 0.1)
 
 
-@mark.skip
+@mark.skipif(not optionals.HAS_AER, reason="Qiskit-Aer is required to run this test.")
 class TestWithAer(TestFromQiskit):
     """Integrtion tests using Qiskit-Aer."""
 
-    @mark.skipif(not optionals.HAS_AER, reason="qiskit-aer is required to run this test")
     def test_circuit_with_dynamic_circuit(self):
         """Test StagedSampler with QuantumCircuit with a dynamic circuit"""
+        from unittest.mock import Mock
+
+        from qiskit.providers import BackendV2
         from qiskit_aer import Aer
 
         qc = QuantumCircuit(2, 1)
@@ -280,7 +282,8 @@ class TestWithAer(TestFromQiskit):
 
         backend = Aer.get_backend("aer_simulator")
         backend.set_options(seed_simulator=15)
-        sampler = StagedSampler(backend, skip_transpilation=True)
+        sampler = StagedSampler(Mock(BackendV2), skip_transpilation=True)
+        sampler._backend = backend  # TODO: BackendV2Converter fails for `aer_simulator`
         sampler.set_transpile_options(seed_transpiler=15)
         result = sampler.run(qc).result()
         assert dicts_almost_equal(result.quasi_dists[0], {0: 0.5029296875, 1: 0.4970703125})
