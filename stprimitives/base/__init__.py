@@ -13,7 +13,9 @@
 """Abstract base classes and interfaces for staged primitives."""
 
 from .staged_estimator import BaseStagedEstimator
+from .staged_sampler import BaseStagedSampler
 
 __all__ = [
     "BaseStagedEstimator",
+    "BaseStagedSampler",
 ]
