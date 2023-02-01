@@ -87,13 +87,8 @@ class StagedEstimator(
         self.group_commuting = group_commuting
         self.skip_transpilation = skip_transpilation  # TODO: transpilation level
         self.bound_pass_manager = bound_pass_manager
-        super().__init__(
-            circuits=None,
-            observables=None,
-            parameters=None,
-            options=options,
-        )
         self._transpile_options = Options()  # TODO: Primitives Options class
+        super().__init__(circuits=None, observables=None, parameters=None, options=options)
 
     ################################################################################
     ## PROPERTIES
@@ -247,13 +242,12 @@ class StagedEstimator(
         return counts_list
 
     def _build_single_result(self, counts_list: Sequence[Counts]) -> EstimatorResult:
-        """Single circuit-observable pair equivalent of ``_build_results``."""
         expval, std_error = self._reckon_expval(counts_list)
         num_circuits = len(counts_list)
         shots = sum(counts.shots() for counts in counts_list)
         shots_per_circuit = shots / (num_circuits or 1)  # Note: avoid division by zero errors
         variance = shots_per_circuit * std_error**2
-        metadata = {
+        metadatum = {
             "variance": variance,
             "std_dev": sqrt(variance),
             "std_error": std_error,
@@ -261,7 +255,7 @@ class StagedEstimator(
             "shots_per_circuit": shots_per_circuit,
             "num_circuits": num_circuits,
         }
-        return EstimatorResult(values=array([expval]), metadata=[metadata])
+        return EstimatorResult(values=array([expval]), metadata=[metadatum])
 
     ################################################################################
     ## AUXILIARY
