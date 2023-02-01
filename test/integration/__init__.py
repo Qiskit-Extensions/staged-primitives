@@ -9,3 +9,19 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+"""Integration testing."""
+
+from pytest import mark
+from qiskit.providers.fake_provider import FakeNairobi, FakeNairobiV2
+
+
+@mark.filterwarnings("ignore:.*qiskit-aer.*")
+class TestFromQiskit:
+    """All tests under this class and subclasses were ported from Qiskit-Terra."""
+
+
+@mark.filterwarnings("ignore:.*qiskit-aer.*")
+@mark.parametrize("backend", [FakeNairobi(), FakeNairobiV2()])
+class TestOnBackends:
+    """Integration tests on backends"""

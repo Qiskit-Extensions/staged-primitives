@@ -16,7 +16,7 @@ from unittest.mock import Mock, patch
 
 from numpy.random import rand
 from numpy.testing import assert_allclose
-from pytest import fixture, mark, raises
+from pytest import fixture, raises
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import EstimatorResult
@@ -25,6 +25,8 @@ from qiskit.providers.fake_provider import FakeNairobi, FakeNairobiV2
 from qiskit.quantum_info.operators import SparsePauliOp
 
 from stprimitives.estimator import StagedEstimator
+
+from . import TestFromQiskit, TestOnBackends
 
 
 ################################################################################
@@ -53,16 +55,6 @@ def observable():
 ################################################################################
 ## TESTS
 ################################################################################
-class TestFromQiskit:
-    """All tests under this class and subclasses were ported from Qiskit-Terra."""
-
-
-@mark.parametrize("backend", [FakeNairobi(), FakeNairobiV2()])
-@mark.filterwarnings("ignore:.*qiskit-aer.*")
-class TestOnBackends:
-    """Integration tests on backends"""
-
-
 class TestRun(TestOnBackends, TestFromQiskit):
     """Tests running different payloads on StagedEstimator."""
 
@@ -316,7 +308,6 @@ class TestJobExecution(TestFromQiskit):
             estimator.run([qc] * reps, [op] * reps, params_list).result()
         assert run_mock.call_count == reps * obs
 
-    @mark.filterwarnings("ignore:.*qiskit-aer.*")
     def test_no_max_circuits(self):
         """Test StagedEstimator works with BackendV1 and no max_experiments set."""
         backend = FakeNairobi()
