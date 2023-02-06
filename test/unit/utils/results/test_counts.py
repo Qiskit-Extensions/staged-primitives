@@ -15,7 +15,11 @@
 from pytest import mark
 from qiskit.result import Counts
 
-from staged_primitives.utils.results import bitflip_counts, bitmask_counts, map_counts
+from staged_primitives.utils.results.counts import (
+    bitflip_counts,
+    bitmask_counts,
+    map_counts,
+)
 
 
 ################################################################################

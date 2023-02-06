@@ -29,7 +29,7 @@ from qiskit.result import Counts
 from staged_primitives.utils.binary import parity_bit
 from staged_primitives.utils.operators import pauli_integer_mask
 
-from .results import bitmask_counts
+from .counts import bitmask_counts
 
 ################################################################################
 ## UTILS
