@@ -38,6 +38,6 @@ class TestISOTimeStamp:
         """Test ISO time stamp timezone."""
         expected = "1994-03-04T15:30:00+01:00"
         with patch("staged_primitives.utils.time.datetime") as datetime_mock:
-            datetime_mock.now.return_value = datetime.fromisoformat(expected)
+            datetime_mock.now().astimezone.return_value = datetime.fromisoformat(expected)
             stamp = isotimestamp(timezone=True)
         assert stamp == expected
