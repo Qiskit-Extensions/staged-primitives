@@ -8,6 +8,7 @@
   [![Tests](https://github.com/Qiskit-Extensions/staged-primitives/actions/workflows/test.yml/badge.svg)](https://github.com/Qiskit-Extensions/staged-primitives/actions/workflows/test.yml)
   [![Coverage](https://coveralls.io/repos/github/Qiskit-Extensions/staged-primitives/badge.svg?branch=main)](https://coveralls.io/github/Qiskit-Extensions/staged-primitives?branch=main)
   [![Release](https://img.shields.io/github/release/Qiskit-Extensions/staged-primitives.svg?include_prereleases&label=Release)](https://github.com/Qiskit-Extensions/staged-primitives/releases)
+  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7613387.svg)](https://doi.org/10.5281/zenodo.7613387)
   [![License](https://img.shields.io/github/license/Qiskit-Extensions/staged-primitives?label=License)](LICENSE.txt)
 
 </div>
