@@ -20,7 +20,7 @@ from pytest import mark
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info.operators import Pauli
 
-from staged_primitives.utils.operators import (
+from staged_primitives.utils.operators.paulis import (
     build_pauli_measurement,
     pauli_integer_mask,
 )
