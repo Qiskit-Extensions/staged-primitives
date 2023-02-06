@@ -18,7 +18,7 @@ from __future__ import annotations
 ################################################################################
 ## UTILS
 ################################################################################
-def parity_bit(integer: int, even: bool = True) -> int:
+def parity_bit(integer: int, even: bool = True) -> bool:
     """Return the parity bit for a given integer."""
     even_bit = bin(integer).count("1") % 2
-    return even_bit if even else int(not even_bit)
+    return bool(even_bit) if even else (not even_bit)
