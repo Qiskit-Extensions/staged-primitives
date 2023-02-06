@@ -1,3 +1,16 @@
+## 0.1.0 (2023-02-06)
+
+### Feat
+
+- **utils**: add time module and isotimestamp function
+- **binary**: add binary_digit util
+
+### Refactor
+
+- **operators**: rename operators module to paulis
+- **results**: rename results module to counts
+- **binary**: change return value in parity_bit to bool
+
 ## 0.0.0 (2023-02-02)
 
 ### Feat

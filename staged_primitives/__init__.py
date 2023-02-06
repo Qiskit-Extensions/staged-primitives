@@ -13,7 +13,7 @@
 """Backend based primitives defining a staged computational pipeline."""
 
 __copyright__ = "(C) Copyright IBM 2023"
-__version__ = "0.0.0"
+__version__ = "0.1.0"
 
 
 __all__ = [
