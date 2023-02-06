@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from pytest import mark
 
-from staged_primitives.utils.binary import parity_bit
+from staged_primitives.utils.binary import binary_digit, parity_bit
 
 
 ################################################################################
@@ -32,3 +32,14 @@ class TestParityBit:
         """Test parity bit base functionality."""
         assert parity_bit(integer, even=True) == expected_even
         assert parity_bit(integer, even=False) == 0 if expected_even else 1
+
+
+class TestBinaryDigit:
+    """Test binary digit."""
+
+    @mark.parametrize(
+        "integer, place, expected", [(0b100, 0, 0), (0b100, 1, 0), (0b100, 2, 1), (0b100, 3, 0)]
+    )
+    def test_binary_digit(self, integer, place, expected):
+        """Test binary digit base functionality."""
+        assert binary_digit(integer, place) == expected
