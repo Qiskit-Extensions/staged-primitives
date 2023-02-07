@@ -13,20 +13,10 @@
 """Results utils."""
 
 from .counts import bitflip_counts, bitmask_counts, map_counts
-from .reckoning import (
-    CanonicalReckoner,
-    ExpvalReckoner,
-    ReckoningResult,
-    reckon_expval,
-    reckon_observable,
-    reckon_pauli,
-)
+from .reckoning import CanonicalReckoner, ExpvalReckoner, ReckoningResult
 
 __all__ = [
     "ReckoningResult",
-    "reckon_expval",
-    "reckon_pauli",
-    "reckon_observable",
     "ExpvalReckoner",
     "CanonicalReckoner",
     "map_counts",

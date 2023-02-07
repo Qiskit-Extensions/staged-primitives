@@ -31,63 +31,14 @@ from staged_primitives.utils.operators import pauli_integer_mask
 
 from .counts import bitmask_counts
 
-################################################################################
-## UTILS
-################################################################################
 ReckoningResult = namedtuple("ReckoningResult", ("expval", "std_error"))
 OperatorType = Union[BaseOperator, PauliSumOp, str]  # TODO: to types
-
-
-def reckon_expval(counts: Counts) -> ReckoningResult:
-    """Reckon expectation value and associated std error from counts.
-
-    Note: The measurement basis is implicit in the way the input counts were produced,
-    therefore the resulting value can be regarded as coming from a multi-qubit Pauli-Z
-    observable (i.e. a fully diagonal Pauli observable).
-    """
-    shots = counts.shots() or 1  # Note: avoid division by zero errors
-    expval: float = 0.0
-    for readout, freq in counts.int_outcomes().items():
-        observation = (-1) ** parity_bit(readout, even=True)
-        expval += observation * freq / shots
-    variance = 1 - expval**2
-    std_error = sqrt(variance / shots)
-    return ReckoningResult(expval, std_error)
-
-
-def reckon_pauli(counts: Counts, pauli: Pauli) -> ReckoningResult:
-    """Reckon expectation value and associated std error from counts and pauli.
-
-    Note: This function treats X, Y, and Z Paulis identically, assuming that the appropriate
-    changes of bases (i.e. rotations) were actively performed in the relevant qubits before
-    readout; hence diagonalizing the input Pauli.
-    """
-    mask = pauli_integer_mask(pauli)
-    counts = bitmask_counts(counts, mask)
-    return reckon_expval(counts)
-
-
-# TODO: `reckon_operator` for non-hermitian inputs
-def reckon_observable(counts: Counts, observable: OperatorType) -> ReckoningResult:
-    """Reckon expectation value and associated std error from counts and observable.
-
-    Note: This function assumes that the input observables are measurable entirely within
-    one circuit execution (i.e. resulting in the input counts), and that the appropriate
-    changes of bases (i.e. rotations) were actively performed in the relevant qubits before
-    readout; hence diagonalizing the input observables.
-    """
-    observable = normalize_operator(observable)
-    values, std_errors = vstack([reckon_pauli(counts, pauli) for pauli in observable.paulis]).T
-    coeffs = array(observable.coeffs)
-    expval = dot(values, coeffs)
-    variance = dot(std_errors**2, coeffs**2)  # TODO: complex coeffs
-    return ReckoningResult(expval, sqrt(variance))
 
 
 ################################################################################
 ## EXPECTATION VALUE RECKONER INTERFACE
 ################################################################################
-class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
+class ExpvalReckoner(ABC):
     """Expectation value reckoning interface.
 
     Classes implementing this interface provide methods for constructing expectation values
@@ -95,12 +46,12 @@ class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
     """
 
     ################################################################################
-    ## INTERFACE
+    ## API
     ################################################################################
     def reckon(
         self,
         counts_list: Sequence[Counts] | Counts,
-        observables: Sequence[OperatorType] | OperatorType,
+        observable_list: Sequence[OperatorType] | OperatorType,
     ) -> ReckoningResult:
         """Compute expectation value and associated std-error for input observables from counts.
 
@@ -115,73 +66,170 @@ class ExpvalReckoner(ABC):  # pylint: disable=too-few-public-methods
         Returns:
             The expectation value and associated std-error for the sum of the input observables.
         """
-        counts_list = self._validate_counts(counts_list)
-        observables = self._validate_observables(observables)
-        self._cross_validate(counts_list, observables)
+        counts_list = self._validate_counts_list(counts_list)
+        observable_list = self._validate_observable_list(observable_list)
+        self._cross_validate_lists(counts_list, observable_list)
+        return self._reckon(counts_list, observable_list)
+
+    # TODO: reckon operator for non-hermitian
+    def reckon_observable(self, counts: Counts, observable: OperatorType) -> ReckoningResult:
+        """Reckon expectation value and associated std error from counts and observable.
+
+        Note: This function assumes that the input observables are measurable entirely within
+        one circuit execution (i.e. resulting in the input counts), and that the appropriate
+        changes of bases (i.e. rotations) were actively performed in the relevant qubits before
+        readout; hence diagonalizing the input observables.
+        """
+        counts = self._validate_counts(counts)
+        observable = self._validate_observable(observable)
+        # TODO: cross-validation
+        return self._reckon_observable(counts, observable)
+
+    def reckon_pauli(self, counts: Counts, pauli: Pauli) -> ReckoningResult:
+        """Reckon expectation value and associated std error from counts and pauli.
+
+        Note: This function treats X, Y, and Z Paulis identically, assuming that the appropriate
+        changes of bases (i.e. rotations) were actively performed in the relevant qubits before
+        readout; hence diagonalizing the input Pauli.
+        """
+        counts = self._validate_counts(counts)
+        pauli = self._validate_pauli(pauli)
+        # TODO: cross-validation
+        return self._reckon_pauli(counts, pauli)
+
+    def reckon_counts(self, counts: Counts) -> ReckoningResult:
+        """Reckon expectation value and associated std error from counts.
+
+        Note: The measurement basis is implicit in the way the input counts were produced,
+        therefore the resulting value can be regarded as coming from a multi-qubit Pauli-Z
+        observable (i.e. a fully diagonal Pauli observable).
+        """
+        counts = self._validate_counts(counts)
+        return self._reckon_counts(counts)
+
+    ################################################################################
+    ## ABSTRACT METHODS
+    ################################################################################
+    @abstractmethod
+    def _reckon(
+        self,
+        counts_list: Sequence[Counts],
+        observable_list: Sequence[SparsePauliOp],
+    ) -> ReckoningResult:
         expval = 0.0
         variance = 0.0
-        for value, error in (self._reckon_single(c, o) for c, o in zip(counts_list, observables)):
+        for value, error in (
+            self._reckon_observable(c, o) for c, o in zip(counts_list, observable_list)
+        ):
             expval += value
             variance += error**2
         return ReckoningResult(expval, sqrt(variance))
 
     @abstractmethod
-    def _reckon_single(
-        self,
-        counts: Counts,
-        observable: SparsePauliOp,
-    ) -> ReckoningResult:
-        """Single input version of `reckon`."""
+    def _reckon_observable(self, counts: Counts, observable: SparsePauliOp) -> ReckoningResult:
+        observable = normalize_operator(observable)
+        values, std_errors = vstack(
+            [self._reckon_pauli(counts, pauli) for pauli in observable.paulis]
+        ).T
+        coeffs = array(observable.coeffs)
+        expval = dot(values, coeffs)
+        variance = dot(std_errors**2, coeffs**2)  # TODO: complex coeffs
+        return ReckoningResult(expval, sqrt(variance))
+
+    @abstractmethod
+    def _reckon_pauli(self, counts: Counts, pauli: Pauli) -> ReckoningResult:
+        mask = pauli_integer_mask(pauli)
+        counts = bitmask_counts(counts, mask)
+        return self._reckon_counts(counts)
+
+    @abstractmethod
+    def _reckon_counts(self, counts: Counts) -> ReckoningResult:
+        shots = counts.shots() or 1  # Note: avoid division by zero errors
+        expval: float = 0.0
+        for readout, freq in counts.int_outcomes().items():
+            observation = (-1) ** parity_bit(readout, even=True)
+            expval += observation * freq / shots
+        variance = 1 - expval**2
+        std_error = sqrt(variance / shots)
+        return ReckoningResult(expval, std_error)
 
     ################################################################################
     ## AUXILIARY
     ################################################################################
-    @staticmethod
-    def _validate_counts(counts_list: Sequence[Counts] | Counts) -> tuple[Counts, ...]:
-        """Validate counts."""
+    @classmethod
+    def _validate_counts_list(cls, counts_list: Sequence[Counts] | Counts) -> tuple[Counts, ...]:
+        """Validate counts list."""
         if isinstance(counts_list, Counts):
             counts_list = (counts_list,)
         if not isinstance(counts_list, Sequence):
             raise TypeError("Expected Sequence object.")
-        if any(not isinstance(c, Counts) for c in counts_list):
-            raise TypeError("Expected Counts object.")
-        return tuple(counts_list)
+        return tuple(cls._validate_counts(c) for c in counts_list)
 
     @staticmethod
-    def _validate_observables(
-        observables: Sequence[OperatorType] | OperatorType,
+    def _validate_counts(counts: Counts) -> Counts:
+        """Validate counts."""
+        # TODO: accept dict[int, int]
+        if isinstance(counts, Counts):
+            return counts
+        raise TypeError("Expected Counts object.")
+
+    @classmethod
+    def _validate_observable_list(
+        cls,
+        observable_list: Sequence[OperatorType] | OperatorType,
     ) -> tuple[SparsePauliOp, ...]:
-        """Validate observables."""
-        if isinstance(observables, (BaseOperator, PauliSumOp, str)):
-            observables = (observables,)
-        if not isinstance(observables, Sequence):
+        """Validate observable list."""
+        if isinstance(observable_list, (BaseOperator, PauliSumOp, str)):
+            observable_list = (observable_list,)
+        if not isinstance(observable_list, Sequence):
             raise TypeError("Expected Sequence object.")
-        if any(not isinstance(o, (BaseOperator, PauliSumOp, str)) for o in observables):
-            raise TypeError("Expected OperatorType object.")
-        return tuple(normalize_operator(o) for o in observables)
+        return tuple(cls._validate_observable(o) for o in observable_list)
 
     @staticmethod
-    def _cross_validate(
-        counts_list: Sequence[Counts], observables: Sequence[SparsePauliOp]
+    def _validate_observable(observable: OperatorType) -> SparsePauliOp:
+        """Validate observable."""
+        if isinstance(observable, (BaseOperator, PauliSumOp, str)):
+            return normalize_operator(observable)
+        raise TypeError("Expected OperatorType object.")
+
+    @staticmethod
+    def _validate_pauli(pauli: Pauli) -> Pauli:
+        """Validate Pauli."""
+        # TODO: accept str
+        if isinstance(pauli, Pauli):
+            return pauli
+        raise TypeError("Expected Pauli object.")
+
+    @staticmethod
+    def _cross_validate_lists(
+        counts_list: Sequence[Counts], observable_list: Sequence[SparsePauliOp]
     ) -> None:
-        """Cross validate counts and observables."""
+        """Cross validate counts and observable lists."""
         # TODO: validate num_bits -> Need to check every entry in counts (expensive)
-        if len(counts_list) != len(observables):
+        if len(counts_list) != len(observable_list):
             raise ValueError(
                 f"The number of counts entries ({len(counts_list)}) does not match "
-                f"the number of observables ({len(observables)})."
+                f"the number of observables ({len(observable_list)})."
             )
 
 
 ################################################################################
 ## IMPLEMENTATION
 ################################################################################
-class CanonicalReckoner(ExpvalReckoner):  # pylint: disable=too-few-public-methods
+# pylint: disable=useless-parent-delegation
+class CanonicalReckoner(ExpvalReckoner):
     """Canonical expectation value reckoning class."""
 
-    def _reckon_single(
-        self,
-        counts: Counts,
-        observable: SparsePauliOp,
+    def _reckon(
+        self, counts_list: Sequence[Counts], observable_list: Sequence[SparsePauliOp]
     ) -> ReckoningResult:
-        return reckon_observable(counts, observable)
+        return super()._reckon(counts_list, observable_list)
+
+    def _reckon_observable(self, counts: Counts, observable: SparsePauliOp) -> ReckoningResult:
+        return super()._reckon_observable(counts, observable)
+
+    def _reckon_pauli(self, counts: Counts, pauli: Pauli) -> ReckoningResult:
+        return super()._reckon_pauli(counts, pauli)
+
+    def _reckon_counts(self, counts: Counts) -> ReckoningResult:
+        return super()._reckon_counts(counts)

@@ -22,89 +22,145 @@ from staged_primitives.utils.results.reckoning import (
     CanonicalReckoner,
     ExpvalReckoner,
     ReckoningResult,
-    reckon_expval,
-    reckon_observable,
-    reckon_pauli,
 )
 
 
 ################################################################################
 ## TESTS
 ################################################################################
-class TestReckonExpval:
-    """Test reckon expval."""
+class TestExpvalReckoner:
+    """Test ExpvalReckoner interface."""
 
     @mark.parametrize(
         "counts, expected",
         [
-            ({}, ReckoningResult(0, 1)),
-            ({0: 0}, ReckoningResult(0, 1)),
-            ({0: 1}, ReckoningResult(1, 0)),
-            ({1: 0}, ReckoningResult(0, 1)),
-            ({1: 1}, ReckoningResult(-1, 0)),
-            ({0: 1, 1: 1}, ReckoningResult(0, 1 / sqrt(2))),
+            (Counts({}), (Counts({}),)),
+            (Counts({0: 1}), (Counts({0: 1}),)),
+            (Counts({0: 0, 1: 1}), (Counts({0: 0, 1: 1}),)),
+            ([Counts({})], (Counts({}),)),
+            ([Counts({0: 1})], (Counts({0: 1}),)),
+            ([Counts({0: 0, 1: 1})], (Counts({0: 0, 1: 1}),)),
+            ([Counts({}), Counts({0: 0, 1: 1})], (Counts({}), Counts({0: 0, 1: 1}))),
         ],
     )
-    def test_reckon_expval(self, counts, expected):
-        """Test reckon expval base functionality."""
-        counts = Counts(counts)
-        result = reckon_expval(counts)
-        assert isinstance(result, ReckoningResult)
-        for r, e in zip(result, expected):
-            assert isclose(r, e)
+    def test_validate_counts_list(self, counts, expected):
+        """Test validate counts."""
+        valid = ExpvalReckoner._validate_counts_list(counts)
+        assert isinstance(valid, tuple)
+        assert all(isinstance(c, Counts) for c in valid)
+        assert valid == expected
 
-
-class TestReckonPauli:
-    """Test reckon Pauli."""
+    @mark.parametrize("counts", NO_ITERS)
+    def test_validate_counts_list_type_error(self, counts):
+        """Test validate counts raises errors."""
+        with raises(TypeError):
+            ExpvalReckoner._validate_counts_list(counts)
+        with raises(TypeError):
+            ExpvalReckoner._validate_counts_list([counts])
 
     @mark.parametrize(
-        "counts, pauli, expected",
+        "observables, expected",
         [
-            ({}, Pauli("I"), ReckoningResult(0, 1)),
-            ({}, Pauli("Z"), ReckoningResult(0, 1)),
-            ({}, Pauli("X"), ReckoningResult(0, 1)),
-            ({}, Pauli("Y"), ReckoningResult(0, 1)),
-            ({0: 1}, Pauli("I"), ReckoningResult(1, 0)),
-            ({0: 1}, Pauli("Z"), ReckoningResult(1, 0)),
-            ({0: 1}, Pauli("X"), ReckoningResult(1, 0)),
-            ({0: 1}, Pauli("Y"), ReckoningResult(1, 0)),
-            ({1: 1}, Pauli("I"), ReckoningResult(1, 0)),
-            ({1: 1}, Pauli("Z"), ReckoningResult(-1, 0)),
-            ({1: 1}, Pauli("X"), ReckoningResult(-1, 0)),
-            ({1: 1}, Pauli("Y"), ReckoningResult(-1, 0)),
-            ({0: 1, 1: 1}, Pauli("I"), ReckoningResult(1, 0)),
-            ({0: 1, 1: 1}, Pauli("Z"), ReckoningResult(0, 1 / sqrt(2))),
-            ({0: 1, 1: 1}, Pauli("X"), ReckoningResult(0, 1 / sqrt(2))),
-            ({0: 1, 1: 1}, Pauli("Y"), ReckoningResult(0, 1 / sqrt(2))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("II"), ReckoningResult(1, 0)),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("IZ"), ReckoningResult(-1 / 3, sqrt(4 / 27))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("IX"), ReckoningResult(-1 / 3, sqrt(4 / 27))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("IY"), ReckoningResult(-1 / 3, sqrt(4 / 27))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZI"), ReckoningResult(-2 / 3, sqrt(5 / 54))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XI"), ReckoningResult(-2 / 3, sqrt(5 / 54))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YI"), ReckoningResult(-2 / 3, sqrt(5 / 54))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZZ"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZX"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZY"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XZ"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XX"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XY"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YZ"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YX"), ReckoningResult(0, sqrt(1 / 6))),
-            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YY"), ReckoningResult(0, sqrt(1 / 6))),
+            ("I", (SparsePauliOp("I"),)),
+            ("Z", (SparsePauliOp("Z"),)),
+            ("X", (SparsePauliOp("X"),)),
+            ("Y", (SparsePauliOp("Y"),)),
+            ("IXYZ", (SparsePauliOp("IXYZ"),)),
+            (Pauli("I"), (SparsePauliOp("I"),)),
+            (Pauli("Z"), (SparsePauliOp("Z"),)),
+            (Pauli("X"), (SparsePauliOp("X"),)),
+            (Pauli("Y"), (SparsePauliOp("Y"),)),
+            (Pauli("IXYZ"), (SparsePauliOp("IXYZ"),)),
+            ([Pauli("I")], (SparsePauliOp("I"),)),
+            ([Pauli("Z")], (SparsePauliOp("Z"),)),
+            ([Pauli("X")], (SparsePauliOp("X"),)),
+            ([Pauli("Y")], (SparsePauliOp("Y"),)),
+            ([Pauli("IXYZ")], (SparsePauliOp("IXYZ"),)),
+            (["ZYXI", Pauli("IXYZ")], (SparsePauliOp("ZYXI"), SparsePauliOp("IXYZ"))),
         ],
     )
-    def test_reckon_pauli(self, counts, pauli, expected):
-        """Test reckon Pauli base functionality."""
-        counts = Counts(counts)
-        result = reckon_pauli(counts, pauli)
+    def test_validate_observable_list(self, observables, expected):
+        """Test validate observables."""
+        valid = ExpvalReckoner._validate_observable_list(observables)
+        assert isinstance(valid, tuple)
+        assert all(isinstance(c, SparsePauliOp) for c in valid)
+        assert valid == expected
+
+    @mark.parametrize("observables", NO_ITERS)
+    def test_validate_observable_list_type_error(self, observables):
+        """Test validate observables raises errors."""
+        with raises(TypeError):
+            ExpvalReckoner._validate_observable_list(observables)
+        with raises(TypeError):
+            ExpvalReckoner._validate_observable_list([observables])
+
+    @mark.parametrize("pauli", ["I", "X", "Y", "Z", "IXYZ"])
+    def test_validate_pauli(self, pauli):
+        """Test validate Pauli."""
+        pauli = Pauli(pauli)
+        assert ExpvalReckoner._validate_pauli(pauli) == pauli
+
+    @mark.parametrize("pauli", NO_ITERS)
+    def test_validate_pauli_type_error(self, pauli):
+        """Test validate Pauli raises errors."""
+        with raises(TypeError):
+            ExpvalReckoner._validate_pauli(pauli)
+
+    @mark.parametrize("seed", range(8))
+    def test_cross_validate_lists(self, seed):
+        """Test cross validate counts and observables."""
+        rng = default_rng(seed)
+        size = rng.integers(256)
+        ExpvalReckoner._cross_validate_lists(["c"] * size, ["o"] * size)
+        with raises(ValueError):
+            ExpvalReckoner._cross_validate_lists(["c"] * size, ["o"] * rng.integers(256))
+
+
+@mark.parametrize("reckoner", [CanonicalReckoner()])
+class TestCanonicalReckoner:
+    """Test CanonicalReckoner."""
+
+    @mark.parametrize(
+        "counts, observables, expected",
+        [
+            ([], [], ReckoningResult(0, 0)),
+            ([Counts({})], ["Z"], ReckoningResult(0, 1)),
+            ([Counts({0: 0})], ["I"], ReckoningResult(0, 1)),
+            ([Counts({0: 1})], ["I"], ReckoningResult(1, 0)),
+            ([Counts({1: 1})], ["I"], ReckoningResult(1, 0)),
+            ([Counts({0: 1})], ["Z"], ReckoningResult(1, 0)),
+            ([Counts({1: 1})], ["Z"], ReckoningResult(-1, 0)),
+            ([Counts({0: 1})], ["X"], ReckoningResult(1, 0)),
+            ([Counts({1: 1})], ["X"], ReckoningResult(-1, 0)),
+            ([Counts({0: 1})], ["Y"], ReckoningResult(1, 0)),
+            ([Counts({1: 1})], ["Y"], ReckoningResult(-1, 0)),
+            ([Counts({0: 1, 1: 1})], ["I"], ReckoningResult(1, 0)),
+            ([Counts({0: 1, 1: 1})], ["Z"], ReckoningResult(0, 1 / sqrt(2))),
+            ([Counts({0: 1, 1: 1})], ["X"], ReckoningResult(0, 1 / sqrt(2))),
+            ([Counts({0: 1, 1: 1})], ["Y"], ReckoningResult(0, 1 / sqrt(2))),
+            (
+                [Counts({0: 1, 1: 1}), Counts({0: 1, 1: 1})],
+                ["I", "Z"],
+                ReckoningResult(1, 1 / sqrt(2)),
+            ),
+            (
+                [Counts({0: 1, 1: 1}), Counts({0: 1, 1: 1})],
+                ["X", "Z"],
+                ReckoningResult(0, 1),
+            ),
+            (
+                [Counts({0: 1, 1: 1}), Counts({0: 1, 1: 1})],
+                [SparsePauliOp(["X", "Z"], [1, 2]), SparsePauliOp(["I"])],
+                ReckoningResult(1, sqrt(5 / 2)),
+            ),
+        ],
+    )
+    def test_reckon(self, reckoner, counts, observables, expected):
+        """Test reckon."""
+        result = reckoner.reckon(counts, observables)
         assert isinstance(result, ReckoningResult)
         for r, e in zip(result, expected):
             assert isclose(r, e)
-
-
-class TestReckonObservable:
-    """Test reckon observable."""
 
     @mark.parametrize(
         "counts, observable, expected",
@@ -144,133 +200,74 @@ class TestReckonObservable:
             ({0: 1, 1: 1}, SparsePauliOp(["Y", "Y"], [1, 2]), ReckoningResult(0, sqrt(5 / 2))),
         ],
     )
-    def test_reckon_observable(self, counts, observable, expected):
-        """Test reckon observable base functionality."""
+    def test_reckon_observable(self, reckoner, counts, observable, expected):
+        """Test reckon observable."""
         counts = Counts(counts)
-        result = reckon_observable(counts, observable)
+        result = reckoner.reckon_observable(counts, observable)
         assert isinstance(result, ReckoningResult)
         for r, e in zip(result, expected):
             assert isclose(r, e)
 
-
-class TestExpvalReckoner:
-    """Test ExpvalReckoner interface."""
+    @mark.parametrize(
+        "counts, pauli, expected",
+        [
+            ({}, Pauli("I"), ReckoningResult(0, 1)),
+            ({}, Pauli("Z"), ReckoningResult(0, 1)),
+            ({}, Pauli("X"), ReckoningResult(0, 1)),
+            ({}, Pauli("Y"), ReckoningResult(0, 1)),
+            ({0: 1}, Pauli("I"), ReckoningResult(1, 0)),
+            ({0: 1}, Pauli("Z"), ReckoningResult(1, 0)),
+            ({0: 1}, Pauli("X"), ReckoningResult(1, 0)),
+            ({0: 1}, Pauli("Y"), ReckoningResult(1, 0)),
+            ({1: 1}, Pauli("I"), ReckoningResult(1, 0)),
+            ({1: 1}, Pauli("Z"), ReckoningResult(-1, 0)),
+            ({1: 1}, Pauli("X"), ReckoningResult(-1, 0)),
+            ({1: 1}, Pauli("Y"), ReckoningResult(-1, 0)),
+            ({0: 1, 1: 1}, Pauli("I"), ReckoningResult(1, 0)),
+            ({0: 1, 1: 1}, Pauli("Z"), ReckoningResult(0, 1 / sqrt(2))),
+            ({0: 1, 1: 1}, Pauli("X"), ReckoningResult(0, 1 / sqrt(2))),
+            ({0: 1, 1: 1}, Pauli("Y"), ReckoningResult(0, 1 / sqrt(2))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("II"), ReckoningResult(1, 0)),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("IZ"), ReckoningResult(-1 / 3, sqrt(4 / 27))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("IX"), ReckoningResult(-1 / 3, sqrt(4 / 27))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("IY"), ReckoningResult(-1 / 3, sqrt(4 / 27))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZI"), ReckoningResult(-2 / 3, sqrt(5 / 54))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XI"), ReckoningResult(-2 / 3, sqrt(5 / 54))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YI"), ReckoningResult(-2 / 3, sqrt(5 / 54))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZZ"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZX"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("ZY"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XZ"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XX"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("XY"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YZ"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YX"), ReckoningResult(0, sqrt(1 / 6))),
+            ({0: 0, 1: 1, 2: 2, 3: 3}, Pauli("YY"), ReckoningResult(0, sqrt(1 / 6))),
+        ],
+    )
+    def test_reckon_pauli(self, reckoner, counts, pauli, expected):
+        """Test reckon Pauli."""
+        counts = Counts(counts)
+        result = reckoner.reckon_pauli(counts, pauli)
+        assert isinstance(result, ReckoningResult)
+        for r, e in zip(result, expected):
+            assert isclose(r, e)
 
     @mark.parametrize(
         "counts, expected",
         [
-            (Counts({}), (Counts({}),)),
-            (Counts({0: 1}), (Counts({0: 1}),)),
-            (Counts({0: 0, 1: 1}), (Counts({0: 0, 1: 1}),)),
-            ([Counts({})], (Counts({}),)),
-            ([Counts({0: 1})], (Counts({0: 1}),)),
-            ([Counts({0: 0, 1: 1})], (Counts({0: 0, 1: 1}),)),
-            ([Counts({}), Counts({0: 0, 1: 1})], (Counts({}), Counts({0: 0, 1: 1}))),
+            ({}, ReckoningResult(0, 1)),
+            ({0: 0}, ReckoningResult(0, 1)),
+            ({0: 1}, ReckoningResult(1, 0)),
+            ({1: 0}, ReckoningResult(0, 1)),
+            ({1: 1}, ReckoningResult(-1, 0)),
+            ({0: 1, 1: 1}, ReckoningResult(0, 1 / sqrt(2))),
         ],
     )
-    def test_validate_counts(self, counts, expected):
-        """Test validate counts."""
-        valid = ExpvalReckoner._validate_counts(counts)
-        assert isinstance(valid, tuple)
-        assert all(isinstance(c, Counts) for c in valid)
-        assert valid == expected
-
-    @mark.parametrize("counts", NO_ITERS)
-    def test_validate_counts_type_error(self, counts):
-        """Test validate counts raises errors."""
-        with raises(TypeError):
-            ExpvalReckoner._validate_counts(counts)
-        with raises(TypeError):
-            ExpvalReckoner._validate_counts([counts])
-
-    @mark.parametrize(
-        "observables, expected",
-        [
-            ("I", (SparsePauliOp("I"),)),
-            ("Z", (SparsePauliOp("Z"),)),
-            ("X", (SparsePauliOp("X"),)),
-            ("Y", (SparsePauliOp("Y"),)),
-            ("IXYZ", (SparsePauliOp("IXYZ"),)),
-            (Pauli("I"), (SparsePauliOp("I"),)),
-            (Pauli("Z"), (SparsePauliOp("Z"),)),
-            (Pauli("X"), (SparsePauliOp("X"),)),
-            (Pauli("Y"), (SparsePauliOp("Y"),)),
-            (Pauli("IXYZ"), (SparsePauliOp("IXYZ"),)),
-            ([Pauli("I")], (SparsePauliOp("I"),)),
-            ([Pauli("Z")], (SparsePauliOp("Z"),)),
-            ([Pauli("X")], (SparsePauliOp("X"),)),
-            ([Pauli("Y")], (SparsePauliOp("Y"),)),
-            ([Pauli("IXYZ")], (SparsePauliOp("IXYZ"),)),
-            (["ZYXI", Pauli("IXYZ")], (SparsePauliOp("ZYXI"), SparsePauliOp("IXYZ"))),
-        ],
-    )
-    def test_validate_observables(self, observables, expected):
-        """Test validate observables."""
-        valid = ExpvalReckoner._validate_observables(observables)
-        assert isinstance(valid, tuple)
-        assert all(isinstance(c, SparsePauliOp) for c in valid)
-        assert valid == expected
-
-    @mark.parametrize("observables", NO_ITERS)
-    def test_validate_observables_type_error(self, observables):
-        """Test validate observables raises errors."""
-        with raises(TypeError):
-            ExpvalReckoner._validate_observables(observables)
-        with raises(TypeError):
-            ExpvalReckoner._validate_observables([observables])
-
-    @mark.parametrize("seed", range(8))
-    def test_cross_validate(self, seed):
-        """Test cross validate counts and observables."""
-        rng = default_rng(seed)
-        size = rng.integers(256)
-        ExpvalReckoner._cross_validate(["c"] * size, ["o"] * size)
-        with raises(ValueError):
-            ExpvalReckoner._cross_validate(["c"] * size, ["o"] * rng.integers(256))
-
-
-class TestCanonicalReckoner:
-    """Test CanonicalReckoner."""
-
-    @mark.parametrize(
-        "counts, observables, expected",
-        [
-            ([], [], ReckoningResult(0, 0)),
-            ([Counts({})], ["Z"], ReckoningResult(0, 1)),
-            ([Counts({0: 0})], ["I"], ReckoningResult(0, 1)),
-            ([Counts({0: 1})], ["I"], ReckoningResult(1, 0)),
-            ([Counts({1: 1})], ["I"], ReckoningResult(1, 0)),
-            ([Counts({0: 1})], ["Z"], ReckoningResult(1, 0)),
-            ([Counts({1: 1})], ["Z"], ReckoningResult(-1, 0)),
-            ([Counts({0: 1})], ["X"], ReckoningResult(1, 0)),
-            ([Counts({1: 1})], ["X"], ReckoningResult(-1, 0)),
-            ([Counts({0: 1})], ["Y"], ReckoningResult(1, 0)),
-            ([Counts({1: 1})], ["Y"], ReckoningResult(-1, 0)),
-            ([Counts({0: 1, 1: 1})], ["I"], ReckoningResult(1, 0)),
-            ([Counts({0: 1, 1: 1})], ["Z"], ReckoningResult(0, 1 / sqrt(2))),
-            ([Counts({0: 1, 1: 1})], ["X"], ReckoningResult(0, 1 / sqrt(2))),
-            ([Counts({0: 1, 1: 1})], ["Y"], ReckoningResult(0, 1 / sqrt(2))),
-            (
-                [Counts({0: 1, 1: 1}), Counts({0: 1, 1: 1})],
-                ["I", "Z"],
-                ReckoningResult(1, 1 / sqrt(2)),
-            ),
-            (
-                [Counts({0: 1, 1: 1}), Counts({0: 1, 1: 1})],
-                ["X", "Z"],
-                ReckoningResult(0, 1),
-            ),
-            (
-                [Counts({0: 1, 1: 1}), Counts({0: 1, 1: 1})],
-                [SparsePauliOp(["X", "Z"], [1, 2]), SparsePauliOp(["I"])],
-                ReckoningResult(1, sqrt(5 / 2)),
-            ),
-        ],
-    )
-    def test_reckon(self, counts, observables, expected):
-        """Test reckon."""
-        reckoner = CanonicalReckoner()
-        result = reckoner.reckon(counts, observables)
+    def test_reckon_counts(self, reckoner, counts, expected):
+        """Test reckon counts."""
+        counts = Counts(counts)
+        result = reckoner.reckon_counts(counts)
         assert isinstance(result, ReckoningResult)
         for r, e in zip(result, expected):
             assert isclose(r, e)
