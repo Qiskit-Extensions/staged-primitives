@@ -119,7 +119,8 @@ class ExpvalReckoner(ABC):
         expval = 0.0
         variance = 0.0
         for value, error in (
-            self._reckon_observable(c, o) for c, o in zip(counts_list, observable_list)
+            self._reckon_observable(counts, observable)
+            for counts, observable in zip(counts_list, observable_list)
         ):
             expval += value
             variance += error**2
