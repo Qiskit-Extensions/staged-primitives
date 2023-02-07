@@ -1,3 +1,14 @@
+## 0.2.0 (2023-02-07)
+
+### Feat
+
+- **time**: add elapsed time utils
+- **reckoning**: reckon observable, pauli and counts in ExpvalReckoner
+
+### Refactor
+
+- **reckoning**: clean loop in canonical _reckon method
+
 ## 0.1.0 (2023-02-06)
 
 ### Feat
