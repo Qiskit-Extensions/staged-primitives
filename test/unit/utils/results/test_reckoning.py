@@ -59,7 +59,7 @@ class TestExpvalReckoner:
             ExpvalReckoner._validate_counts_list([counts])
 
     @mark.parametrize(
-        "observables, expected",
+        "operators, expected",
         [
             ("I", (SparsePauliOp("I"),)),
             ("Z", (SparsePauliOp("Z"),)),
@@ -79,20 +79,20 @@ class TestExpvalReckoner:
             (["ZYXI", Pauli("IXYZ")], (SparsePauliOp("ZYXI"), SparsePauliOp("IXYZ"))),
         ],
     )
-    def test_validate_observable_list(self, observables, expected):
-        """Test validate observables."""
-        valid = ExpvalReckoner._validate_observable_list(observables)
+    def test_validate_operator_list(self, operators, expected):
+        """Test validate operators."""
+        valid = ExpvalReckoner._validate_operator_list(operators)
         assert isinstance(valid, tuple)
         assert all(isinstance(c, SparsePauliOp) for c in valid)
         assert valid == expected
 
-    @mark.parametrize("observables", NO_ITERS)
-    def test_validate_observable_list_type_error(self, observables):
-        """Test validate observables raises errors."""
+    @mark.parametrize("operators", NO_ITERS)
+    def test_validate_operator_list_type_error(self, operators):
+        """Test validate operators raises errors."""
         with raises(TypeError):
-            ExpvalReckoner._validate_observable_list(observables)
+            ExpvalReckoner._validate_operator_list(operators)
         with raises(TypeError):
-            ExpvalReckoner._validate_observable_list([observables])
+            ExpvalReckoner._validate_operator_list([operators])
 
     @mark.parametrize("pauli", ["I", "X", "Y", "Z", "IXYZ"])
     def test_validate_pauli(self, pauli):
@@ -108,7 +108,7 @@ class TestExpvalReckoner:
 
     @mark.parametrize("seed", range(8))
     def test_cross_validate_lists(self, seed):
-        """Test cross validate counts and observables."""
+        """Test cross validate counts and operators."""
         rng = default_rng(seed)
         size = rng.integers(256)
         ExpvalReckoner._cross_validate_lists(["c"] * size, ["o"] * size)
@@ -121,7 +121,7 @@ class TestCanonicalReckoner:
     """Test CanonicalReckoner."""
 
     @mark.parametrize(
-        "counts, observables, expected",
+        "counts, operators, expected",
         [
             ([], [], ReckoningResult(0, 0)),
             ([Counts({})], ["Z"], ReckoningResult(0, 1)),
@@ -155,15 +155,18 @@ class TestCanonicalReckoner:
             ),
         ],
     )
-    def test_reckon(self, reckoner, counts, observables, expected):
+    @mark.parametrize("global_coeff", [1, 1j, 1 + 1j, 0.5 + 2j])
+    def test_reckon(self, reckoner, counts, operators, expected, global_coeff):
         """Test reckon."""
-        result = reckoner.reckon(counts, observables)
+        operators = (SparsePauliOp(o) if not isinstance(o, SparsePauliOp) else o for o in operators)
+        operators = [global_coeff * o for o in operators]
+        result = reckoner.reckon(counts, operators)
         assert isinstance(result, ReckoningResult)
         for r, e in zip(result, expected):
-            assert isclose(r, e)
+            assert isclose(r, global_coeff * e)
 
     @mark.parametrize(
-        "counts, observable, expected",
+        "counts, operator, expected",
         [
             ({}, SparsePauliOp("I"), ReckoningResult(0, 1)),
             ({}, SparsePauliOp(["I", "I"]), ReckoningResult(0, sqrt(2))),
@@ -200,13 +203,15 @@ class TestCanonicalReckoner:
             ({0: 1, 1: 1}, SparsePauliOp(["Y", "Y"], [1, 2]), ReckoningResult(0, sqrt(5 / 2))),
         ],
     )
-    def test_reckon_observable(self, reckoner, counts, observable, expected):
-        """Test reckon observable."""
+    @mark.parametrize("global_coeff", [1, 1j, 1 + 1j, 0.5 + 2j])
+    def test_reckon_operator(self, reckoner, counts, operator, expected, global_coeff):
+        """Test reckon operator."""
         counts = Counts(counts)
-        result = reckoner.reckon_observable(counts, observable)
+        operator = global_coeff * operator
+        result = reckoner.reckon_operator(counts, operator)
         assert isinstance(result, ReckoningResult)
         for r, e in zip(result, expected):
-            assert isclose(r, e)
+            assert isclose(r, global_coeff * e)
 
     @mark.parametrize(
         "counts, pauli, expected",
