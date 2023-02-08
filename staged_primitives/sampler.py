@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from copy import copy
 
 from numpy import sqrt
 from qiskit.circuit import QuantumCircuit
@@ -147,6 +148,9 @@ class StagedSampler(
         # Conversion
         circuits = list(circuits)  # TODO: accept Sequences in `backend.run()` (i.e. Qiskit-Terra)
 
+        # Extract metadata (might be affected in `backend.run`)
+        metadata_list = [copy(getattr(c, "metadata", {})) for c in circuits]
+
         # Max circuits
         total_circuits: int = len(circuits)
         max_circuits: int = getattr(self.backend, "max_circuits", None) or total_circuits or 1
@@ -165,9 +169,9 @@ class StagedSampler(
         )
         counts_iter = (counts for job_counts in job_counts_iter for counts in job_counts)
         counts_list: list[Counts] = []
-        for counts, circuit in zip(counts_iter, circuits):
-            # TODO: `Counts.metadata` attr (i.e. Qiskit-Terra)
-            counts.metadata = circuit.metadata or {}
+        for counts, metadata in zip(counts_iter, metadata_list):
+            # TODO: add `Counts.metadata` attr (i.e. Qiskit-Terra)
+            counts.metadata = metadata
             counts_list.append(counts)
 
         return counts_list
