@@ -1,3 +1,13 @@
+## 0.3.0 (2023-02-08)
+
+### Feat
+
+- **reckoning**: add support for non-hermitian operators
+
+### Fix
+
+- copy metadata to avoid backend.run update by reference bug in Aer
+
 ## 0.2.0 (2023-02-07)
 
 ### Feat
