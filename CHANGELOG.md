@@ -1,3 +1,9 @@
+## 0.3.1 (2023-02-09)
+
+### Fix
+
+- **reckoning**: compute real valued std_error instead of complex
+
 ## 0.3.0 (2023-02-08)
 
 ### Feat
