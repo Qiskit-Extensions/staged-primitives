@@ -72,7 +72,6 @@ class ExpvalReckoner(ABC):
         self._cross_validate_lists(counts_list, operator_list)
         return self._reckon(counts_list, operator_list)
 
-    # TODO: reckon operator for non-hermitian
     def reckon_operator(self, counts: Counts, operator: OperatorType) -> ReckoningResult:
         """Reckon expectation value and associated std error from counts and operator.
 
@@ -124,18 +123,15 @@ class ExpvalReckoner(ABC):
         operator_list: Sequence[SparsePauliOp],
     ) -> ReckoningResult:
         expval = 0.0
-        variance_real = 0.0
-        variance_imag = 0.0
+        variance = 0.0
         for value, error in (
             self._reckon_operator(counts, operator)
             for counts, operator in zip(counts_list, operator_list)
         ):
             expval += value
-            variance_real += error.real**2
-            variance_imag += error.imag**2
+            variance += error**2
         expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
-        std_err = sqrt(variance_real) + 1j * sqrt(variance_imag)
-        std_err = real_if_close(std_err).tolist()
+        std_err = sqrt(variance)
         return ReckoningResult(expval, std_err)
 
     @abstractmethod
@@ -145,10 +141,8 @@ class ExpvalReckoner(ABC):
         coeffs = array(operator.coeffs)
         expval = dot(values, coeffs)
         expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
-        variance_real = dot(std_errors**2, coeffs.real**2)
-        variance_imag = dot(std_errors**2, coeffs.imag**2)
-        std_err = sqrt(variance_real) + 1j * sqrt(variance_imag)
-        std_err = real_if_close(std_err).tolist()
+        variance = dot(std_errors**2, coeffs * coeffs.conjugate()).real
+        std_err = sqrt(variance)
         return ReckoningResult(expval, std_err)
 
     @abstractmethod

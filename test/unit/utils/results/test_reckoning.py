@@ -162,8 +162,11 @@ class TestCanonicalReckoner:
         operators = [global_coeff * o for o in operators]
         result = reckoner.reckon(counts, operators)
         assert isinstance(result, ReckoningResult)
-        for r, e in zip(result, expected):
-            assert isclose(r, global_coeff * e)
+        assert isinstance(result.expval, (int, float, complex))
+        assert isclose(result.expval, global_coeff * expected.expval)
+        var_coeff = global_coeff * global_coeff.conjugate()
+        assert isinstance(result.std_error, (int, float))
+        assert isclose(result.std_error, sqrt(var_coeff) * expected.std_error)
 
     @mark.parametrize(
         "counts, operator, expected",
@@ -210,8 +213,11 @@ class TestCanonicalReckoner:
         operator = global_coeff * operator
         result = reckoner.reckon_operator(counts, operator)
         assert isinstance(result, ReckoningResult)
-        for r, e in zip(result, expected):
-            assert isclose(r, global_coeff * e)
+        assert isinstance(result.expval, (int, float, complex))
+        assert isclose(result.expval, global_coeff * expected.expval)
+        var_coeff = global_coeff * global_coeff.conjugate()
+        assert isinstance(result.std_error, (int, float))
+        assert isclose(result.std_error, sqrt(var_coeff) * expected.std_error)
 
     @mark.parametrize(
         "counts, pauli, expected",
@@ -255,8 +261,10 @@ class TestCanonicalReckoner:
         counts = Counts(counts)
         result = reckoner.reckon_pauli(counts, pauli)
         assert isinstance(result, ReckoningResult)
-        for r, e in zip(result, expected):
-            assert isclose(r, e)
+        assert isinstance(result.expval, (int, float, complex))
+        assert isclose(result.expval, expected.expval)
+        assert isinstance(result.std_error, (int, float))
+        assert isclose(result.std_error, expected.std_error)
 
     @mark.parametrize(
         "counts, expected",
@@ -274,5 +282,7 @@ class TestCanonicalReckoner:
         counts = Counts(counts)
         result = reckoner.reckon_counts(counts)
         assert isinstance(result, ReckoningResult)
-        for r, e in zip(result, expected):
-            assert isclose(r, e)
+        assert isinstance(result.expval, (int, float, complex))
+        assert isclose(result.expval, expected.expval)
+        assert isinstance(result.std_error, (int, float))
+        assert isclose(result.std_error, expected.std_error)
