@@ -81,10 +81,10 @@ class ExpvalReckoner(ABC):
         readout; hence diagonalizing the input operators.
 
         Returns:
-            A two tuple containing the expectation value and associated std error for the
-            input operator. Both of these values can have real and imaginary components,
-            which can be interpreted as the expectation value and std error corresponding
-            to the hermitian and anti-hermitian components of the input operator respectively.
+            A two-tuple containing the expectation value and associated std error for the
+            input operator. Expectation values can have both real and imaginary components,
+            which can be interpreted as corresponding to the hermitian and anti-hermitian
+            components of the input operator respectively. Standard errors will always be real.
         """
         counts = self._validate_counts(counts)
         operator = self._validate_operator(operator)
