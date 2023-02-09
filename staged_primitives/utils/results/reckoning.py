@@ -141,7 +141,7 @@ class ExpvalReckoner(ABC):
         coeffs = array(operator.coeffs)
         expval = dot(values, coeffs)
         expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
-        variance = dot(std_errors**2, coeffs * coeffs.conjugate()).real
+        variance = dot(std_errors**2, (coeffs.real**2 + coeffs.imag**2))
         std_err = sqrt(variance)
         return ReckoningResult(expval, std_err)
 
