@@ -149,7 +149,10 @@ class ExpvalReckoner(ABC):
     def _reckon_pauli(self, counts: Counts, pauli: Pauli) -> ReckoningResult:
         mask = pauli_integer_mask(pauli)
         counts = bitmask_counts(counts, mask)
-        return self._reckon_counts(counts)
+        coeff = (-1j) ** pauli.phase
+        expval, std_error = self._reckon_counts(counts)
+        expval *= real_if_close(coeff).tolist()  # Note: `tolist` casts to python core numeric type
+        return ReckoningResult(expval, std_error)
 
     @abstractmethod
     def _reckon_counts(self, counts: Counts) -> ReckoningResult:
