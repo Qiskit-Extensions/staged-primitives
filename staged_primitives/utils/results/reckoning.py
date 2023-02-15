@@ -211,12 +211,13 @@ class ExpvalReckoner(ABC):
         raise TypeError("Expected OperatorType object.")
 
     @staticmethod
-    def _validate_pauli(pauli: Pauli) -> Pauli:
+    def _validate_pauli(pauli: Pauli | str) -> Pauli:
         """Validate Pauli."""
-        # TODO: accept str
-        if isinstance(pauli, Pauli):
-            return pauli
-        raise TypeError("Expected Pauli object.")
+        if isinstance(pauli, str):
+            pauli = Pauli(pauli)
+        elif not isinstance(pauli, Pauli):
+            raise TypeError(f"Expected Pauli, got {pauli!r} instead.")
+        return pauli
 
     @staticmethod
     def _cross_validate_lists(

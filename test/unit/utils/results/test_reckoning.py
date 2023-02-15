@@ -97,6 +97,7 @@ class TestExpvalReckoner:
     @mark.parametrize("pauli", ["I", "X", "Y", "Z", "IXYZ"])
     def test_validate_pauli(self, pauli):
         """Test validate Pauli."""
+        assert ExpvalReckoner._validate_pauli(pauli) == Pauli(pauli)
         pauli = Pauli(pauli)
         assert ExpvalReckoner._validate_pauli(pauli) == pauli
 
