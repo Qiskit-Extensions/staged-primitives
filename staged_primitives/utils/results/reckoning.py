@@ -177,19 +177,20 @@ class ExpvalReckoner(ABC):
     @classmethod
     def _validate_counts_list(cls, counts_list: Sequence[Counts] | Counts) -> tuple[Counts, ...]:
         """Validate counts list."""
-        if isinstance(counts_list, Counts):
+        if isinstance(counts_list, (Counts, dict)):
             counts_list = (counts_list,)
         if not isinstance(counts_list, Sequence):
             raise TypeError("Expected Sequence object.")
         return tuple(cls._validate_counts(c) for c in counts_list)
 
     @staticmethod
-    def _validate_counts(counts: Counts) -> Counts:
+    def _validate_counts(counts: Counts | dict) -> Counts:
         """Validate counts."""
-        # TODO: accept dict[int, int]
-        if isinstance(counts, Counts):
-            return counts
-        raise TypeError("Expected Counts object.")
+        if isinstance(counts, dict):
+            counts = Counts(counts)
+        if not isinstance(counts, Counts):
+            raise TypeError("Expected Counts object.")
+        return counts
 
     @classmethod
     def _validate_operator_list(

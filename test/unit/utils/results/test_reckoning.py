@@ -34,12 +34,21 @@ class TestExpvalReckoner:
     @mark.parametrize(
         "counts, expected",
         [
+            ({}, (Counts({}),)),
             (Counts({}), (Counts({}),)),
+            ({0: 1}, (Counts({0: 1}),)),
             (Counts({0: 1}), (Counts({0: 1}),)),
+            ({0: 0, 1: 1}, (Counts({0: 0, 1: 1}),)),
             (Counts({0: 0, 1: 1}), (Counts({0: 0, 1: 1}),)),
+            ([{}], (Counts({}),)),
             ([Counts({})], (Counts({}),)),
+            ([{0: 1}], (Counts({0: 1}),)),
             ([Counts({0: 1})], (Counts({0: 1}),)),
+            ([{0: 0, 1: 1}], (Counts({0: 0, 1: 1}),)),
             ([Counts({0: 0, 1: 1})], (Counts({0: 0, 1: 1}),)),
+            ([{}, {0: 0, 1: 1}], (Counts({}), Counts({0: 0, 1: 1}))),
+            ([Counts({}), {0: 0, 1: 1}], (Counts({}), Counts({0: 0, 1: 1}))),
+            ([{}, Counts({0: 0, 1: 1})], (Counts({}), Counts({0: 0, 1: 1}))),
             ([Counts({}), Counts({0: 0, 1: 1})], (Counts({}), Counts({0: 0, 1: 1}))),
         ],
     )
