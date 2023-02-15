@@ -149,7 +149,7 @@ class ExpvalReckoner(ABC):
         values, std_errors = vstack(value_std_error_pairs).T  # Note: like zip but array output
         coeffs = array(operator.coeffs)
         expval = dot(values, coeffs)
-        variance = dot(std_errors**2, (coeffs.real**2 + coeffs.imag**2)).real
+        variance = dot(std_errors.real**2, (coeffs.real**2 + coeffs.imag**2))
         return ReckoningResult(expval, sqrt(variance))
 
     @abstractmethod
