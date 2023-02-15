@@ -1,3 +1,19 @@
+## 0.4.0 (2023-02-15)
+
+### Feat
+
+- **reckoning**: add support for counts dict inputs
+- **reckoning**: add support for pauli str inputs
+- **reckoning**: add support for pauli phases
+
+### Refactor
+
+- **reckoning**: auto cast output to python core numeric types
+
+### Perf
+
+- **reckoning**: improve complex abs square computation runtime
+
 ## 0.3.1 (2023-02-09)
 
 ### Fix
