@@ -17,10 +17,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from collections.abc import Sequence
-from math import sqrt
 from typing import Union
 
-from numpy import array, dot, real_if_close, vstack
+from numpy import array, dot, real_if_close, sqrt, vstack
 from qiskit.opflow import PauliSumOp
 from qiskit.primitives.utils import init_observable as normalize_operator
 from qiskit.quantum_info.operators import Pauli, SparsePauliOp
@@ -70,7 +69,10 @@ class ExpvalReckoner(ABC):
         counts_list = self._validate_counts_list(counts_list)
         operator_list = self._validate_operator_list(operator_list)
         self._cross_validate_lists(counts_list, operator_list)
-        return self._reckon(counts_list, operator_list)
+        expval, std_error = self._reckon(counts_list, operator_list)
+        expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
+        std_error = array(std_error).tolist()
+        return ReckoningResult(expval, std_error)
 
     def reckon_operator(self, counts: Counts, operator: OperatorType) -> ReckoningResult:
         """Reckon expectation value and associated std error from counts and operator.
@@ -89,7 +91,10 @@ class ExpvalReckoner(ABC):
         counts = self._validate_counts(counts)
         operator = self._validate_operator(operator)
         # TODO: cross-validation
-        return self._reckon_operator(counts, operator)
+        expval, std_error = self._reckon_operator(counts, operator)
+        expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
+        std_error = array(std_error).tolist()
+        return ReckoningResult(expval, std_error)
 
     def reckon_pauli(self, counts: Counts, pauli: Pauli) -> ReckoningResult:
         """Reckon expectation value and associated std error from counts and pauli.
@@ -101,7 +106,10 @@ class ExpvalReckoner(ABC):
         counts = self._validate_counts(counts)
         pauli = self._validate_pauli(pauli)
         # TODO: cross-validation
-        return self._reckon_pauli(counts, pauli)
+        expval, std_error = self._reckon_pauli(counts, pauli)
+        expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
+        std_error = array(std_error).tolist()
+        return ReckoningResult(expval, std_error)
 
     def reckon_counts(self, counts: Counts) -> ReckoningResult:
         """Reckon expectation value and associated std error from counts.
@@ -111,7 +119,10 @@ class ExpvalReckoner(ABC):
         operator (i.e. a fully diagonal Pauli operator).
         """
         counts = self._validate_counts(counts)
-        return self._reckon_counts(counts)
+        expval, std_error = self._reckon_counts(counts)
+        expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
+        std_error = array(std_error).tolist()
+        return ReckoningResult(expval, std_error)
 
     ################################################################################
     ## ABSTRACT METHODS
@@ -130,9 +141,7 @@ class ExpvalReckoner(ABC):
         ):
             expval += value
             variance += error**2
-        expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
-        std_err = sqrt(variance)
-        return ReckoningResult(expval, std_err)
+        return ReckoningResult(expval, sqrt(variance))
 
     @abstractmethod
     def _reckon_operator(self, counts: Counts, operator: SparsePauliOp) -> ReckoningResult:
@@ -140,10 +149,8 @@ class ExpvalReckoner(ABC):
         values, std_errors = vstack(value_std_error_pairs).T  # Note: like zip but array output
         coeffs = array(operator.coeffs)
         expval = dot(values, coeffs)
-        expval = real_if_close(expval).tolist()  # Note: `tolist` casts to python core numeric type
-        variance = dot(std_errors**2, (coeffs.real**2 + coeffs.imag**2))
-        std_err = sqrt(variance)
-        return ReckoningResult(expval, std_err)
+        variance = dot(std_errors**2, (coeffs.real**2 + coeffs.imag**2)).real
+        return ReckoningResult(expval, sqrt(variance))
 
     @abstractmethod
     def _reckon_pauli(self, counts: Counts, pauli: Pauli) -> ReckoningResult:
@@ -151,8 +158,7 @@ class ExpvalReckoner(ABC):
         counts = bitmask_counts(counts, mask)
         coeff = (-1j) ** pauli.phase
         expval, std_error = self._reckon_counts(counts)
-        expval *= real_if_close(coeff).tolist()  # Note: `tolist` casts to python core numeric type
-        return ReckoningResult(expval, std_error)
+        return ReckoningResult(coeff * expval, std_error)
 
     @abstractmethod
     def _reckon_counts(self, counts: Counts) -> ReckoningResult:
