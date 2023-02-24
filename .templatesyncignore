@@ -1,0 +1,14 @@
+# SOURCE
+docs/
+pyproject_qiskit/
+test/
+
+# PACKAGE
+.cz.toml
+CITATION.bib
+pyproject.toml
+README.md
+
+# CI/CD/CT
+.github/CODEOWNERS
+tox.ini
