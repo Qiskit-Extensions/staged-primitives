@@ -60,12 +60,12 @@ Although not strictly required, it can be useful to create a new *virtual enviro
 
 The easiest way to install this package is from the PyPI public repository. This will install the latest stable version available, which will provide a higher level of robustness, although patches and updates might take longer to be available. From the terminal, use pip to install the package:
 ```
-pip install staged-primitives
+pip install pyproject-qiskit
 ```
 
 To update the package to its latest release (i.e. at a later point in time):
 ```
-pip install -U staged-primitives
+pip install -U pyproject-qiskit
 ```
 
 
@@ -76,16 +76,16 @@ To get the latest features and patches as soon as they are released, or to contr
 0. Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed for version control.
 1. From the terminal, clone the repository. This will add the provided URL to the list of remotes under the name `origin`:
     ```
-    git clone https://github.com/Qiskit-Extensions/staged-primitives.git
+    git clone https://github.com/pedrorrivero/pyproject-qiskit.git
     ```
     Alternatively, instead of cloning the original repository, you may choose to clone your personal [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) —provided that this functionality is enabled. You can do so by using the appropriate URL and adding the original repository to the list of remotes (here under the name `upstream`). This will be required for [contribution](CONTRIBUTING.md) unless you are granted write permissions for the original repository.
     ```
     git clone <YOUR-FORK-URL>
-    git remote add upstream https://github.com/Qiskit-Extensions/staged-primitives.git
+    git remote add upstream https://github.com/pedrorrivero/pyproject-qiskit.git
     ```
 2. Change directory to the freshly cloned repository:
     ```
-    cd staged-primitives
+    cd pyproject-qiskit
     ```
 3. Install the package and required dependencies:
     ```
@@ -119,22 +119,22 @@ For developers:
 
 If you wish to install any of these bundles of optional dependencies (e.g. `<OPT-BUN>`) from PyPI use the following format in your installation/update commands:
 ```
-pip install [-U] staged-primitives[<OPT-BUN>]
+pip install [-U] pyproject-qiskit[<OPT-BUN>]
 ```
 Or, for multiple optional bundles:
 ```
-pip install [-U] staged-primitives[<OPT-BUN-1>,<OPT-BUN-2>]
+pip install [-U] pyproject-qiskit[<OPT-BUN-1>,<OPT-BUN-2>]
 ```
 If running `zsh` on the terminal (e.g. default shell on macOS devices), you will instead need to enclose the target in between quotation marks:
 ```
-pip install [-U] "staged-primitives[<OPT-BUN>]"
+pip install [-U] "pyproject-qiskit[<OPT-BUN>]"
 ```
 This can be checked by running the following command:
 ```
 echo $0
 ```
 
-The same format can be used for installation of these bundles from source by simply substituting `staged-primitives` for `.` in the install commands. For example:
+The same format can be used for installation of these bundles from source by simply substituting `pyproject-qiskit` for `.` in the install commands. For example:
 ```
 pip install .[<OPT-BUN-1>,<OPT-BUN-2>]
 ```
@@ -148,15 +148,15 @@ pip install -e ".[<OPT-BUN-1>,<OPT-BUN-2>]"
 
 Users may now run the demo notebooks on their local machine (optional dependencies apply), or use the package in their own software by simply importing it:
 ```python
-import staged_primitives
+import pyproject_qiskit
 ```
 From the terminal:
 ```
 $ python
 Python 3.10.5 (main, Jun 23 2022, 17:15:25) [Clang 13.1.6 (clang-1316.0.21.2.5)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
->>> import staged_primitives
->>> print(staged_primitives)
-<module 'staged_primitives' from '.venv/lib/python3.10/site-packages/staged_primitives/__init__.py'>
+>>> import pyproject_qiskit
+>>> print(pyproject_qiskit)
+<module 'pyproject_qiskit' from '.venv/lib/python3.10/site-packages/pyproject_qiskit/__init__.py'>
 ```
 For instructions on how to use this package see [here](docs/reference_guide.md).
