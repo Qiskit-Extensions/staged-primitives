@@ -12,9 +12,9 @@ maintainers = [
 ]
 keywords = [
     "quantum computing",
-    "primitives",
+    "quantum information science",
     "qiskit",
-    "IBM",
+    "primitives",
 ]
 readme = "README.md"
 license = {file = "LICENSE.txt"}
@@ -42,7 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "tox >= 3.25.1",
+    "tox >= 4.4.6",
     "pre-commit >= 2.19.0",
     "commitizen >= 2.28.0",
 ]
