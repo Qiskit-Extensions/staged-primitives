@@ -19,4 +19,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_repo_path: pedrorrivero/pyproject-qiskit
           upstream_branch: main
+          pr_title: "chore(template): merge template changes"
           pr_labels: template
+          pr_commit_msg: "chore(template): merge template changes"
