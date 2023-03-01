@@ -36,8 +36,8 @@ We encourage your feedback!
 
 Other than submitting new source code, users can contribute in a number of meaningful ways. You can share your thoughts with us by:
 
-- [Opening an issue](https://github.com/pedrorrivero/pyproject-qiskit/issues) in the repository for reporting bugs, enhancements, or requesting new features.
-- [Starting a conversation on GitHub Discussions](https://github.com/pedrorrivero/pyproject-qiskit/discussions) and engaging with researchers, developers, and other users regarding this project.
+- _Opening an issue_ in the repository for reporting bugs, enhancements, or requesting new features.
+- _Starting a conversation on GitHub Discussions_ and engaging with researchers, developers, and other users regarding this project.
 - Filling out our [survey](https://airtable.com/shr7sMAKUAjuIRpv7).
 
 
@@ -61,6 +61,11 @@ Additionally, in order to ensure meeting the quality of code standards for this 
 pre-commit install -t pre-commit
 ```
 
+Alternatively, you can install both hooks with just one command:
+```
+pre-commit install
+```
+
 Notice that this tool is not a substitute of `tox`, which should still be used to run tests and ensure that lint checks pass with all relevant versions. Instead, it should be regarded simply as a convenient device for continuously performing light-weight lint checks in an incremental fashion.
 
 
@@ -80,8 +85,6 @@ For help fixing the format and complying to the lint rules we provide a pre-conf
 ```
 tox -e style
 ```
-
-<!-- See our [granular testing](#granular-testing) guide for more information on how to use these tools individually for style compliance. -->
 
 ### Documentation
 We adhere to the [google docstring guide](https://docs.idmod.org/projects/doc-guidance/en/latest/docstrings.html). If you make any changes to the code, remember updating the docstring wherever relevant.
