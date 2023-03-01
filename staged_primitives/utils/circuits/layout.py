@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Sequence
 from typing import Any
 
-from qiskit.circuit import Measure, QuantumCircuit, Qubit
+from qiskit.circuit import QuantumCircuit
 from qiskit.transpiler import Layout, PassManager
 from qiskit.transpiler.passes import ApplyLayout, SetLayout
 
@@ -107,30 +107,6 @@ def infer_end_layout(
     layout_dict: dict[int, Any] = dict.fromkeys(range(transpiled_circuit.num_qubits))
     layout_dict.update(dict(zip(physical_qubits, original_circuit.qubits)))
     return Layout(layout_dict)
-
-
-def get_measured_qubits(circuit: QuantumCircuit) -> set[Qubit]:
-    """Get qubits with at least one measurement gate in them."""
-    return {qargs[0] for gate, qargs, _ in circuit if isinstance(gate, Measure)}
-
-
-def compose_circuits_w_metadata(*circuits: QuantumCircuit, inplace: bool = False) -> QuantumCircuit:
-    """Compose quantum circuits merging metadata."""
-    # TODO: `circuit.compose(qc, inplace=True)` return `self` (i.e. Qiskit-Terra)
-    # Note: implementation can be simplified after above TODOs using `functools.reduce`
-    # composition = reduce(lambda base, next: base.compose(next, inplace=True), circuits)
-    # composition.metadata = {k: v for c in circuits for k, v in (c.metadata or {}).items()}
-    composition = circuits[0]
-    circuits = circuits[1:]
-    if not inplace:
-        composition = composition.copy()
-    # TODO: default `QuantumCircuit.metadata` to {} (i.e. Qiskit-Terra)
-    if composition.metadata is None:
-        composition.metadata = {}
-    for circuit in circuits:
-        composition.compose(circuit, inplace=True)
-        composition.metadata.update(circuit.metadata or {})
-    return composition
 
 
 ################################################################################
