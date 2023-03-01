@@ -1,5 +1,10 @@
 # Quantum Prototype Installation Guide
 
+The following installation guide is generic and therefore needs to be adapted to the particular package that you want to install. This is easily done by replacing:
+1. The template _repo url_ `https://github.com/pedrorrivero/pyproject-qiskit.git` with the url of the remote git repository hosting the package (e.g. `https://github.com/Qiskit-Extensions/staged-primitives.git`).
+2. The template _name_ `pyproject-qiskit` with the name of the desired package (e.g. `staged-primitives`).
+3. The template _import name_ `pyproject_qiskit` with the import name of the desired package (e.g. `staged_primitives`).
+
 To follow along, make sure that your local environment is compatible with the package:
 - Supported operating system (Linux, macOS, or Windows).
 - Supported Python version (3.8 – 3.11).
