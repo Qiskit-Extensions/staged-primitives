@@ -29,10 +29,8 @@ from qiskit.result import Counts, Result
 from qiskit.transpiler import PassManager, StagedPassManager
 
 from staged_primitives.base import BaseStagedEstimator
-from staged_primitives.utils.circuits import (
-    compose_circuits_w_metadata,
-    infer_end_layout_intlist,
-)
+from staged_primitives.utils.circuits.composition import compose_circuits_w_metadata
+from staged_primitives.utils.circuits.layout import infer_end_layout_intlist
 from staged_primitives.utils.operators import (
     AbelianDecomposer,
     NaiveDecomposer,

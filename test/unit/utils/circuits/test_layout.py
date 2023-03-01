@@ -14,16 +14,10 @@
 
 from __future__ import annotations
 
-from functools import reduce
-
-from numpy.random import default_rng
 from pytest import mark, raises
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.random import random_circuit
 
-from staged_primitives.utils.circuits import (
-    compose_circuits_w_metadata,
-    get_measured_qubits,
+from staged_primitives.utils.circuits.layout import (
     infer_end_layout,
     infer_end_layout_intlist,
     layout_from_intlist,
@@ -172,76 +166,3 @@ class TestInferEndLayout:
         layout = layout_from_intlist(circuit, layout_intlist, target_num_qubits)
         transpiled_circuit = transpile_to_layout(circuit, layout)
         assert infer_end_layout(circuit, transpiled_circuit) == layout
-
-
-class TestGetMeasuredQubits:
-    """Test get measured qubits."""
-
-    @mark.parametrize(
-        "num_qubits, measured_qubits",
-        [
-            (1, ()),
-            (1, (0,)),
-            (2, (0,)),
-            (2, (1,)),
-            (2, (0, 1)),
-            (2, (1, 0)),
-            (3, (0,)),
-            (3, (1,)),
-            (3, (2,)),
-            (3, (0, 1)),
-            (3, (1, 0)),
-            (3, (0, 2)),
-            (3, (2, 0)),
-            (3, (1, 2)),
-            (3, (2, 1)),
-            (3, (0, 1, 2)),
-            (3, (2, 0, 1)),
-            (3, (1, 2, 0)),
-            (3, (2, 1, 0)),
-            (3, (0, 2, 1)),
-            (3, (1, 0, 2)),
-        ],
-    )
-    def test_get_measured_qubits(self, num_qubits, measured_qubits):
-        """Test get measured qubits base functionality."""
-        num_cbits = len(measured_qubits)
-        qc = QuantumCircuit(num_qubits, num_cbits)
-        qc.measure(measured_qubits, range(num_cbits))
-        measured_qubits = set(qc.qubits[i] for i in measured_qubits)
-        assert get_measured_qubits(qc) == measured_qubits
-
-
-class TestComposeCircuitsWMetadata:
-    """Test compose circuits."""
-
-    def test_defaults(self):
-        """Test args defaults."""
-        # Case
-        qc = QuantumCircuit(3)
-        qc.x(qc.qubits)
-        qc.metadata = {}
-        circuits = [qc] * 4
-        # Test
-        assert compose_circuits_w_metadata(*circuits) is not circuits[0]
-
-    @mark.parametrize("num_circuits, num_qubits, seed", zip(range(2, 5), range(1, 5), range(5)))
-    def test_compose_circuits_w_metadata(self, num_circuits, num_qubits, seed):
-        """Test compose circuits base functionality."""
-        # Case
-        rng = default_rng(seed)
-        seeds = tuple(rng.integers(256) for _ in range(num_circuits))
-        circuits = tuple(random_circuit(num_qubits, num_qubits, seed=s) for s in seeds)
-        for circuit, seed in zip(circuits, seeds):
-            circuit.metadata = {"seed": seed} if rng.choice([True, False]) else None
-        expected = reduce(lambda base, next: base.compose(next), circuits)  # Note: deepcopies
-        expected.metadata = {k: v for c in circuits for k, v in (c.metadata or {}).items()}
-        # Test
-        composition = compose_circuits_w_metadata(*circuits, inplace=False)
-        assert composition is not circuits[0]
-        assert composition == expected
-        assert composition.metadata == expected.metadata
-        composition = compose_circuits_w_metadata(*circuits, inplace=True)
-        assert composition is circuits[0]
-        assert composition == expected
-        assert composition.metadata == expected.metadata
