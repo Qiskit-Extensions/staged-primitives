@@ -10,27 +10,15 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from test import NO_INTS, NO_REAL
-
 from pytest import mark
 
-from staged_primitives.utils.typing import isint, isinteger, isreal
+from staged_primitives.utils.typing import isinteger, isreal
 
 
 ################################################################################
 ## TYPE CHECKING
 ################################################################################
-@mark.parametrize("object", [0, 1, -1])
-def test_isint_true(object):
-    assert isint(object)
-
-
-@mark.parametrize("object", NO_INTS, ids=[str(type(i).__name__) for i in NO_INTS])
-def test_isint_false(object):
-    assert not isint(object)
-
-
-@mark.parametrize("object", [0, 1, -1, 1.0, -1.0])
+@mark.parametrize("object", [0, 1, -1, 1.0, -1.0, True, False])
 def test_isinteger_true(object):
     assert isinteger(object)
 
@@ -40,11 +28,11 @@ def test_isinteger_false(object):
     assert not isinteger(object)
 
 
-@mark.parametrize("object", [0, 1, -1, 1.2, -2.4])
+@mark.parametrize("object", [0, 1, -1, 1.2, -2.4, True, False])
 def test_isreal_true(object):
     assert isreal(object)
 
 
-@mark.parametrize("object", NO_REAL, ids=[str(type(i).__name__) for i in NO_REAL])
+@mark.parametrize("object", [float("nan"), float("inf"), float("-inf"), {}, (0, 1)])
 def test_isreal_false(object):
     assert not isreal(object)

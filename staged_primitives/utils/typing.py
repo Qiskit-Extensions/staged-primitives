@@ -15,16 +15,11 @@
 from typing import Any
 
 
-def isint(obj: Any) -> bool:
-    """Check if object is int"""
-    return isinstance(obj, int) and not isinstance(obj, bool)
-
-
 def isinteger(obj: Any) -> bool:
     """Check if object is an integer number"""
-    return isint(obj) or isinstance(obj, float) and obj.is_integer()
+    return isinstance(obj, int) or isinstance(obj, float) and obj.is_integer()
 
 
 def isreal(obj: Any) -> bool:
     """Check if object is a real number: int or float minus ``±Inf`` and ``NaN``."""
-    return isint(obj) or isinstance(obj, float) and float("-Inf") < obj < float("Inf")
+    return isinstance(obj, int) or isinstance(obj, float) and float("-Inf") < obj < float("Inf")
