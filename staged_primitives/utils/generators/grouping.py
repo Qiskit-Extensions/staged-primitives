@@ -28,8 +28,8 @@ def group_elements(elements: Iterable, group_size: int) -> Iterator[tuple]:
         The next grouped tuple
     """
     if not isinstance(elements, Iterable):
-        raise TypeError("Values argument must be iterable.")
+        raise TypeError("Elements argument must be iterable.")
     if not isinstance(group_size, int) or group_size < 1:
-        raise TypeError("Size argument must be non-zero positive int.")
+        raise TypeError("Group size argument must be non-zero positive int.")
     multi_iterable = [iter(elements)] * group_size
     yield from zip(*multi_iterable)
