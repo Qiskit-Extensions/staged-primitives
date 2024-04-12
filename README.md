@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This prototype is not maintained since April 2023.
+
 <!-- SHIELDS -->
 <div align="left">
 
